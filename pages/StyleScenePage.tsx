@@ -189,21 +189,29 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
     loadState();
   }, [user.id, SESSION_STORAGE_KEY]);
 
-  // Save state on change
+  // Save state on change - following TryOnPage pattern
   useEffect(() => {
-    // Fix: Prevent saving state until the initial load is complete.
+    // Prevent saving state until the initial load is complete.
     if (isStateLoading) {
         return;
     }
 
     const saveState = async () => {
         try {
-            // Garment images are still temporarily stored in IndexedDB
-            if (garmentFrontImage) await saveImage(GARMENT_FRONT_IMAGE_KEY, garmentFrontImage);
-            else await deleteImage(GARMENT_FRONT_IMAGE_KEY);
-            if (garmentBackImage) await saveImage(GARMENT_BACK_IMAGE_KEY, garmentBackImage);
-            else await deleteImage(GARMENT_BACK_IMAGE_KEY);
+            // Save images to IndexedDB - same pattern as TryOnPage
+            if (garmentFrontImage) {
+                await saveImage(GARMENT_FRONT_IMAGE_KEY, garmentFrontImage);
+            } else {
+                await deleteImage(GARMENT_FRONT_IMAGE_KEY);
+            }
 
+            if (garmentBackImage) {
+                await saveImage(GARMENT_BACK_IMAGE_KEY, garmentBackImage);
+            } else {
+                await deleteImage(GARMENT_BACK_IMAGE_KEY);
+            }
+
+            // Save all serializable state to session storage
             const stateToSave = {
                 garmentFrontImageKey: garmentFrontImage ? GARMENT_FRONT_IMAGE_KEY : null,
                 garmentBackImageKey: garmentBackImage ? GARMENT_BACK_IMAGE_KEY : null,
@@ -223,6 +231,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             console.error("Failed to save state", error);
         }
     };
+    
     saveState();
   }, [isStateLoading, garmentFrontImage, garmentBackImage, gender, modelId, poseGenerationState, poseCollections, user.id, SESSION_STORAGE_KEY, GARMENT_FRONT_IMAGE_KEY, GARMENT_BACK_IMAGE_KEY]);
 
@@ -256,14 +265,25 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
     prevModelIdRef.current = modelId;
   }, [modelId]);
   
-  const handleGarmentFrontUpload = async (file: ImageFile) => {
-    await deleteUserStyleSceneFolder(user.id);
-    await deleteImage(GARMENT_BACK_IMAGE_KEY);
+  const handleGarmentFrontUpload = (file: ImageFile) => {
+    // Only clear everything if this is a completely new garment (no front image existed)
+    const isNewGarment = !garmentFrontImage;
     
+    if (isNewGarment) {
+      // Clear generated poses and collections for new garment
+      setPoseGenerationState({});
+      setPoseCollections({});
+      // Delete old folder asynchronously (don't await)
+      deleteUserStyleSceneFolder(user.id).catch(err => console.error('Failed to delete folder:', err));
+    }
+    
+    // Simply set the front image - React will preserve the back image automatically
     setGarmentFrontImage(file);
-    setGarmentBackImage(null);
-    setPoseGenerationState({});
-    setPoseCollections({});
+  };
+
+  const handleGarmentBackUpload = (file: ImageFile) => {
+    // Simply set the back image - React will preserve the front image automatically
+    setGarmentBackImage(file);
   };
 
   const handleStartGeneration = (pose: PoseForDisplay, garmentView: 'front' | 'back') => {
@@ -528,7 +548,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     <ImageUploader id="garment-front-image" title="Upload Garment (Front View)" onImageUpload={handleGarmentFrontUpload} icon={<GarmentIcon />} currentFile={garmentFrontImage} />
-                    <ImageUploader id="garment-back-image" title="Upload Garment (Back View)" onImageUpload={setGarmentBackImage} icon={<GarmentIcon />} currentFile={garmentBackImage} />
+                    <ImageUploader id="garment-back-image" title="Upload Garment (Back View)" onImageUpload={handleGarmentBackUpload} icon={<GarmentIcon />} currentFile={garmentBackImage} />
                 </div>
               </>
             ))}

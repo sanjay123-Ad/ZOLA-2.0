@@ -14,6 +14,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, title, icon, onImageU
   const [isDragging, setIsDragging] = useState(false);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const nextUrl = currentFile?.dataUrl || null;
@@ -22,7 +23,26 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, title, icon, onImageU
       return nextUrl;
     });
     setIsImageLoaded(false);
+    
+    // For data URLs, show immediately (they're already loaded)
+    if (nextUrl && nextUrl.startsWith('data:')) {
+      // Small delay to ensure the img element is rendered
+      const timer = setTimeout(() => {
+        setIsImageLoaded(true);
+      }, 10);
+      return () => clearTimeout(timer);
+    }
   }, [currentFile]);
+
+  // Separate effect to check if image is already loaded (for cached images)
+  useEffect(() => {
+    if (previewUrl && imgRef.current && !previewUrl.startsWith('data:')) {
+      // Check if image is already complete (cached, only for non-data URLs)
+      if (imgRef.current.complete && imgRef.current.naturalHeight > 0) {
+        setIsImageLoaded(true);
+      }
+    }
+  }, [previewUrl]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -112,10 +132,21 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ id, title, icon, onImageU
       {previewUrl ? (
         <>
           <img
+            ref={(img) => {
+              imgRef.current = img;
+              // Check if image is already loaded when ref is set (for cached images)
+              if (img && img.complete && img.naturalHeight > 0) {
+                setIsImageLoaded(true);
+              }
+            }}
             src={previewUrl}
             alt={title}
             className={`absolute inset-0 w-full h-full object-cover rounded-xl pointer-events-none transition-opacity duration-200 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setIsImageLoaded(true)}
+            onError={() => {
+              console.error('Failed to load image');
+              setIsImageLoaded(false);
+            }}
             loading="lazy"
           />
           <button
