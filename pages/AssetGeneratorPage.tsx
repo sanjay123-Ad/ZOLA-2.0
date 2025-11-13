@@ -198,30 +198,36 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
                 }
             }
 
-            if (bridged) return;
-
-            const savedState = loadState<any>(SESSION_STORAGE_KEY);
-            if (!savedState) return;
-            const storedImage = savedState.sourceImageKey ? await getImage(savedState.sourceImageKey) : null;
-
-            if (!isMounted) return;
-
-            if (storedImage) {
-                setSourceImage(storedImage);
-            } else {
-                setSourceImage(null);
+            if (bridged) {
+                if (isMounted) {
+                    setIsStateRestored(true);
+                }
+                return;
             }
 
-            if (savedState.view === 'results') {
-                setGender(savedState.gender ?? null);
-                setGeneratedAssets(savedState.generatedAssets || []);
-                setComposedOutfitImage(savedState.composedOutfitImage || null);
-                setSavedAssetIds(new Set(savedState.savedAssetIds || []));
-                setView('results');
-            } else {
-                if (savedState.gender) setGender(savedState.gender);
-                if (savedState.extractionScope) setExtractionScope(savedState.extractionScope as ExtractionScope);
-                setView('setup');
+            const savedState = loadState<any>(SESSION_STORAGE_KEY);
+            if (savedState) {
+                const storedImage = savedState.sourceImageKey ? await getImage(savedState.sourceImageKey) : null;
+
+                if (!isMounted) return;
+
+                if (storedImage) {
+                    setSourceImage(storedImage);
+                } else {
+                    setSourceImage(null);
+                }
+
+                if (savedState.view === 'results') {
+                    setGender(savedState.gender ?? null);
+                    setGeneratedAssets(savedState.generatedAssets || []);
+                    setComposedOutfitImage(savedState.composedOutfitImage || null);
+                    setSavedAssetIds(new Set(savedState.savedAssetIds || []));
+                    setView('results');
+                } else {
+                    if (savedState.gender) setGender(savedState.gender);
+                    if (savedState.extractionScope) setExtractionScope(savedState.extractionScope as ExtractionScope);
+                    setView('setup');
+                }
             }
 
         } catch (error) {
@@ -246,7 +252,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
   useEffect(() => {
     if (!isStateRestored) return;
 
-    const saveState = async () => {
+    const saveCurrentState = async () => {
         try {
             let stateToSave: any;
             if (view === 'results') {
@@ -273,7 +279,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
             console.error("Failed to save state", error);
         }
     };
-    saveState();
+    saveCurrentState();
   }, [gender, sourceImage, extractionScope, view, generatedAssets, composedOutfitImage, savedAssetIds, user.id, SESSION_STORAGE_KEY, SOURCE_IMAGE_KEY, isStateRestored]);
 
 

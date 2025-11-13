@@ -119,7 +119,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
             const [userImg, garmentImg, genImg] = await Promise.all([
                 savedState.userImageKey ? getImage(savedState.userImageKey) : Promise.resolve(null),
                 savedState.garmentImageKey ? getImage(savedState.garmentImageKey) : Promise.resolve(null),
-                savedState.generatedImageKey ? getImage(`tryon-generated-image_${user.id}`) : Promise.resolve(null)
+                savedState.generatedImageKey ? getImage(savedState.generatedImageKey) : Promise.resolve(null)
             ]);
 
             setUserImage(userImg);
@@ -144,7 +144,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     // Prevent saving state until the initial load is complete.
     if (isStateLoading) return;
 
-    const saveState = async () => {
+    const saveCurrentState = async () => {
         try {
             // Define user-specific keys inside the effect
             const USER_IMAGE_KEY = `tryon-user-image_${user.id}`;
@@ -188,7 +188,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     
     // Don't save while loading to avoid inconsistent states on refresh
     if (!isLoading) {
-        saveState();
+        saveCurrentState();
     }
   }, [
     isStateLoading, gender, userImage, garmentImage, garmentDescription, garmentSuggestions,
@@ -423,12 +423,12 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     setGarmentGenderWarning(null);
     setGarmentClassification(null);
     
-    // Clear any saved state from the session and IndexedDB.
+    // Clear any saved state from persistent storage and IndexedDB.
     const GENERATED_IMAGE_KEY = `tryon-generated-image_${user.id}`;
     await deleteImage(USER_IMAGE_KEY);
     await deleteImage(GARMENT_IMAGE_KEY);
     await deleteImage(GENERATED_IMAGE_KEY);
-    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    removeState(SESSION_STORAGE_KEY);
   }
   
   const handleApplyRefinement = (newImage: string) => {
