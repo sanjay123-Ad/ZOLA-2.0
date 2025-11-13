@@ -139,10 +139,44 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     }
   }, [user.id]);
 
+  // Save state before page unload/navigation
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!isStateLoading && !isLoading) {
+        const USER_IMAGE_KEY = `tryon-user-image_${user.id}`;
+        const GARMENT_IMAGE_KEY = `tryon-garment-image_${user.id}`;
+        const GENERATED_IMAGE_KEY = `tryon-generated-image_${user.id}`;
+        
+        const stateToSave = {
+          gender,
+          userImageKey: userImage ? USER_IMAGE_KEY : null,
+          garmentImageKey: garmentImage ? GARMENT_IMAGE_KEY : null,
+          garmentDescription,
+          garmentSuggestions,
+          garmentClassification,
+          backgroundOption,
+          aspectRatio,
+          swapUpperBody,
+          swapLowerBody,
+          generatedImageKey: generatedImage ? GENERATED_IMAGE_KEY : null,
+          isSaved,
+        };
+        saveState(SESSION_STORAGE_KEY, stateToSave);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isStateLoading, isLoading, gender, userImage, garmentImage, garmentDescription, garmentSuggestions, garmentClassification, backgroundOption, aspectRatio, swapUpperBody, swapLowerBody, generatedImage, isSaved, user.id]);
+
   // Save state on change
   useEffect(() => {
     // Prevent saving state until the initial load is complete.
     if (isStateLoading) return;
+    // Don't save while actively generating to avoid race conditions
+    if (isLoading) return;
 
     const saveCurrentState = async () => {
         try {
@@ -186,14 +220,11 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
         }
     };
     
-    // Don't save while loading to avoid inconsistent states on refresh
-    if (!isLoading) {
-        saveCurrentState();
-    }
+    saveCurrentState();
   }, [
-    isStateLoading, gender, userImage, garmentImage, garmentDescription, garmentSuggestions,
+    gender, userImage, garmentImage, garmentDescription, garmentSuggestions,
     garmentClassification, backgroundOption, aspectRatio, swapUpperBody,
-    swapLowerBody, generatedImage, isLoading, isSaved, user.id
+    swapLowerBody, generatedImage, isSaved, user.id, isStateLoading, isLoading
   ]);
 
   useEffect(() => {

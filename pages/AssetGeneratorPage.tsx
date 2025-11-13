@@ -248,6 +248,38 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
     };
   }, [user.id, SESSION_STORAGE_KEY, SOURCE_IMAGE_KEY]);
 
+  // Save state before page unload/navigation
+  useEffect(() => {
+    if (!isStateRestored) return;
+
+    const handleBeforeUnload = () => {
+      let stateToSave: any;
+      if (view === 'results') {
+        stateToSave = {
+          view: 'results',
+          gender,
+          sourceImageKey: sourceImage ? SOURCE_IMAGE_KEY : null,
+          generatedAssets,
+          composedOutfitImage,
+          savedAssetIds: Array.from(savedAssetIds),
+        };
+      } else {
+        stateToSave = {
+          view: 'setup',
+          gender,
+          sourceImageKey: sourceImage ? SOURCE_IMAGE_KEY : null,
+          extractionScope,
+        };
+      }
+      saveState(SESSION_STORAGE_KEY, stateToSave);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isStateRestored, view, gender, sourceImage, extractionScope, generatedAssets, composedOutfitImage, savedAssetIds, user.id, SOURCE_IMAGE_KEY]);
+
   // Save state on change
   useEffect(() => {
     if (!isStateRestored) return;
@@ -280,7 +312,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
         }
     };
     saveCurrentState();
-  }, [gender, sourceImage, extractionScope, view, generatedAssets, composedOutfitImage, savedAssetIds, user.id, SESSION_STORAGE_KEY, SOURCE_IMAGE_KEY, isStateRestored]);
+  }, [gender, sourceImage, extractionScope, view, generatedAssets, composedOutfitImage, savedAssetIds, user.id, SOURCE_IMAGE_KEY, isStateRestored]);
 
 
   const handleImageUpload = async (file: ImageFile) => {
