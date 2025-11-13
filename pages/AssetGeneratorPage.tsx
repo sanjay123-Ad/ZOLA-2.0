@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, ImageFile, ExtractedAsset, AssetCategory } from '../types';
 import { saveImage, getImage, deleteImage } from '../services/imageStore';
+import { saveState, loadState, removeState } from '../services/stateStore';
 import ImageUploader from '../components/ImageUploader';
 import { GarmentIcon, DownloadIcon, MaleIcon, FemaleIcon, SaveIcon } from '../components/icons';
 import { extractAssetsFromImage, composeOutfit } from '../services/assetGeneratorService';
@@ -183,7 +184,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
             if (bridgedDataUrl) {
                 bridged = true;
                 sessionStorage.removeItem('bridge_image_to_asset_generator');
-                sessionStorage.removeItem(SESSION_STORAGE_KEY);
+                removeState(SESSION_STORAGE_KEY);
                 await deleteImage(SOURCE_IMAGE_KEY);
                 const imageFile = dataUrlToImageFile(bridgedDataUrl);
                 if (imageFile && isMounted) {
@@ -199,10 +200,8 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
 
             if (bridged) return;
 
-            const savedStateJSON = sessionStorage.getItem(SESSION_STORAGE_KEY);
-            if (!savedStateJSON) return;
-
-            const savedState = JSON.parse(savedStateJSON);
+            const savedState = loadState<any>(SESSION_STORAGE_KEY);
+            if (!savedState) return;
             const storedImage = savedState.sourceImageKey ? await getImage(savedState.sourceImageKey) : null;
 
             if (!isMounted) return;
@@ -227,7 +226,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
 
         } catch (error) {
             console.error("Failed to load state", error);
-            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+            removeState(SESSION_STORAGE_KEY);
             await deleteImage(SOURCE_IMAGE_KEY);
         } finally {
             if (isMounted) {
@@ -269,7 +268,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
                     extractionScope,
                 };
             }
-            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(stateToSave));
+            saveState(SESSION_STORAGE_KEY, stateToSave);
         } catch (error) {
             console.error("Failed to save state", error);
         }
@@ -371,7 +370,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
     setError(null);
     setSavedAssetIds(new Set());
     await deleteImage(SOURCE_IMAGE_KEY);
-    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    removeState(SESSION_STORAGE_KEY);
   };
   
   const isGenerateDisabled = !gender || !sourceImage || !!genderWarning;

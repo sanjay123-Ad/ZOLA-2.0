@@ -4,6 +4,7 @@ import { ImageFile, User, GeneratedAsset } from '../types';
 import { generateVirtualTryOn, analyzeGarmentImage, detectGender, detectGarmentGender } from '../services/virtualTryOnService';
 import { classifyGarmentsInImage } from '../services/assetGeneratorService';
 import { saveImage, getImage, deleteImage } from '../services/imageStore';
+import { saveState, loadState, removeState } from '../services/stateStore';
 import ImageUploader from '../components/ImageUploader';
 import Spinner from '../components/Spinner';
 import { UserIcon, GarmentIcon, DownloadIcon, SaveIcon, RefineIcon, ShareIcon, MaleIcon, FemaleIcon, AssetGeneratorIcon } from '../components/icons';
@@ -80,7 +81,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
 
     const processBridgedData = async () => {
         // If bridging, this is a new user action. Clear any saved state for THIS user.
-        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        removeState(SESSION_STORAGE_KEY);
         await deleteImage(USER_IMAGE_KEY);
         await deleteImage(GARMENT_IMAGE_KEY);
 
@@ -96,11 +97,10 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
       processBridgedData();
     } else {
       // Otherwise, load saved state.
-      const loadState = async () => {
+      const loadSavedState = async () => {
         try {
-          const savedStateJSON = sessionStorage.getItem(SESSION_STORAGE_KEY);
-          if (savedStateJSON) {
-            const savedState = JSON.parse(savedStateJSON);
+          const savedState = loadState<any>(SESSION_STORAGE_KEY);
+          if (savedState) {
 
             // Restore setup state
             if (savedState.gender) setGender(savedState.gender);
@@ -129,13 +129,13 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
             }
           }
         } catch (error) {
-          console.error("Failed to load state from sessionStorage", error);
-          sessionStorage.removeItem(SESSION_STORAGE_KEY);
+          console.error("Failed to load state from persistent storage", error);
+          removeState(SESSION_STORAGE_KEY);
         } finally {
             setIsStateLoading(false);
         }
       };
-      loadState();
+      loadSavedState();
     }
   }, [user.id]);
 
@@ -165,7 +165,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                 await deleteImage(GENERATED_IMAGE_KEY);
             }
             
-            // Save all serializable state to session storage
+            // Save all serializable state to persistent storage
             const stateToSave = {
                 gender,
                 userImageKey: userImage ? USER_IMAGE_KEY : null,
@@ -180,7 +180,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                 generatedImageKey: generatedImage ? GENERATED_IMAGE_KEY : null,
                 isSaved,
             };
-            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(stateToSave));
+            saveState(SESSION_STORAGE_KEY, stateToSave);
         } catch (error) {
             console.error("Failed to save state:", error);
         }

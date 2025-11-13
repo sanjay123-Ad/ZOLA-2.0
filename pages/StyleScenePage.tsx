@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, ImageFile } from '../types';
 import { generatePoseSwapImage } from '../services/styleSceneService';
 import { saveImage, getImage, deleteImage } from '../services/imageStore';
+import { saveState, loadState, removeState } from '../services/stateStore';
 import { uploadStyleSceneImage, deleteUserStyleSceneFolder } from '../services/db';
 import { ALL_MODELS, Model, Pose } from '../services/models';
 import ImageUploader from '../components/ImageUploader';
@@ -97,15 +98,14 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
 
   // Load state on mount
   useEffect(() => {
-    const loadState = async () => {
+    const loadSavedState = async () => {
         // --- 1. Load general session state into local variables first ---
         let loadedPoseState: Record<string, PoseGenerationState> = {};
         let loadedCollections: Record<string, CollectionItem[]> = {};
         
         try {
-            const savedStateJSON = sessionStorage.getItem(SESSION_STORAGE_KEY);
-            if (savedStateJSON) {
-                const savedState = JSON.parse(savedStateJSON);
+            const savedState = loadState<any>(SESSION_STORAGE_KEY);
+            if (savedState) {
                 if (savedState.garmentFrontImageKey) setGarmentFrontImage(await getImage(savedState.garmentFrontImageKey));
                 if (savedState.garmentBackImageKey) setGarmentBackImage(await getImage(savedState.garmentBackImageKey));
                 if (savedState.gender) setGender(savedState.gender);
@@ -115,20 +115,19 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 if (savedState.poseCollections) loadedCollections = savedState.poseCollections;
             }
         } catch (error) {
-            console.error("Failed to load state from session storage", error);
-            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+            console.error("Failed to load state from persistent storage", error);
+            removeState(SESSION_STORAGE_KEY);
         }
 
-        // --- 1.5. Load persistent collections from sessionStorage (for each pose) ---
-        // Check all sessionStorage keys that match the pattern background_collection_*
-        for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i);
+        // --- 1.5. Load persistent collections from localStorage (for each pose) ---
+        // Check all localStorage keys that match the pattern background_collection_*
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
             if (key && key.startsWith('background_collection_')) {
                 const poseId = key.replace('background_collection_', '');
                 try {
-                    const collectionJSON = sessionStorage.getItem(key);
-                    if (collectionJSON) {
-                        const collection = JSON.parse(collectionJSON);
+                    const collection = loadState<CollectionItem[]>(key);
+                    if (collection) {
                         // Merge with existing collections, but persistent storage takes precedence
                         loadedCollections = { ...loadedCollections, [poseId]: collection };
                     }
@@ -139,15 +138,14 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
         }
 
         // --- 2. Check for updates from Background Gallery and merge ---
-        const poseId = sessionStorage.getItem('updated_image_pose_id');
+        const poseId = sessionStorage.getItem('updated_image_pose_id'); // Keep sessionStorage for temporary bridge data
         if (poseId) {
-            const collectionJSON = sessionStorage.getItem('updated_image_collection');
-            if (collectionJSON) {
+            const updatedCollection = loadState<CollectionItem[]>(`updated_image_collection_${poseId}`);
+            if (updatedCollection) {
                 try {
-                    const updatedCollection = JSON.parse(collectionJSON);
                     loadedCollections = { ...loadedCollections, [poseId]: updatedCollection };
                     // Also update the persistent storage
-                    sessionStorage.setItem(`background_collection_${poseId}`, collectionJSON);
+                    saveState(`background_collection_${poseId}`, updatedCollection);
                 } catch (e) { console.error("Failed to parse updated collection", e); }
             }
 
@@ -186,7 +184,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
         sessionStorage.removeItem('selected_model_id');
     }
 
-    loadState();
+    loadSavedState();
   }, [user.id, SESSION_STORAGE_KEY]);
 
   // Save state on change - following TryOnPage pattern
@@ -196,7 +194,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
         return;
     }
 
-    const saveState = async () => {
+    const saveCurrentState = async () => {
         try {
             // Save images to IndexedDB - same pattern as TryOnPage
             if (garmentFrontImage) {
@@ -211,7 +209,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 await deleteImage(GARMENT_BACK_IMAGE_KEY);
             }
 
-            // Save all serializable state to session storage
+            // Save all serializable state to persistent storage
             const stateToSave = {
                 garmentFrontImageKey: garmentFrontImage ? GARMENT_FRONT_IMAGE_KEY : null,
                 garmentBackImageKey: garmentBackImage ? GARMENT_BACK_IMAGE_KEY : null,
@@ -220,19 +218,19 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 poseGenerationState, // Public URLs are fine to store
                 poseCollections,
             };
-            sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(stateToSave));
+            saveState(SESSION_STORAGE_KEY, stateToSave);
             
             // Also save each collection to persistent storage (poseId-specific keys)
             Object.entries(poseCollections).forEach(([poseId, collection]) => {
                 const collectionKey = `background_collection_${poseId}`;
-                sessionStorage.setItem(collectionKey, JSON.stringify(collection));
+                saveState(collectionKey, collection);
             });
         } catch (error) {
             console.error("Failed to save state", error);
         }
     };
     
-    saveState();
+    saveCurrentState();
   }, [isStateLoading, garmentFrontImage, garmentBackImage, gender, modelId, poseGenerationState, poseCollections, user.id, SESSION_STORAGE_KEY, GARMENT_FRONT_IMAGE_KEY, GARMENT_BACK_IMAGE_KEY]);
 
   const selectedModel = useMemo(() => modelId ? ALL_MODELS.find(m => m.id === modelId) : null, [modelId]);
