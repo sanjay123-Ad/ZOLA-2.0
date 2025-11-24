@@ -6,7 +6,7 @@ import { HamburgerIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from './
 
 interface LayoutProps {
   user: User;
-  onLogout: () => void;
+  onLogout: (e?: React.MouseEvent) => void;
   onHelpClick: () => void;
   children?: React.ReactNode; // Keep for Outlet context if needed, but primarily use Outlet
 }

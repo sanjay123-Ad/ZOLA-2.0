@@ -43,6 +43,20 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #aaa;
     }
+    @keyframes clip-loop {
+      0% {
+        clip-path: inset(0 100% 0 0);
+      }
+      50% {
+        clip-path: inset(0 0 0 0);
+      }
+      100% {
+        clip-path: inset(0 0 0 0);
+      }
+    }
+    .animate-clip-loop {
+      animation: clip-loop 4s ease-in-out infinite;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="importmap">

@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isTourActive, setIsTourActive] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const hasHandledPasswordRecovery = useRef(false);
 
   // State for session-cached gallery
@@ -328,13 +329,43 @@ const App: React.FC = () => {
   }, [currentUser, location.pathname, loading, navigate, fetchGalleryAssets, fetchCollectionAssets]);
 
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error logging out:', error);
+  const handleLogout = async (e?: React.MouseEvent) => {
+    // Prevent event bubbling and default behavior
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-    // The onAuthStateChange listener will handle setting currentUser to null and clearing assets.
-    navigate(PATHS.LANDING);
+
+    // Prevent double-clicks
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+        // Still navigate even if there's an error to ensure user can log out
+      }
+      // Clear any user-specific state from localStorage
+      if (currentUser) {
+        // Clear user-specific state (this will be handled by stateStore if needed)
+        // The onAuthStateChange listener will handle setting currentUser to null and clearing assets.
+      }
+      // Navigate to landing page
+      navigate(PATHS.LANDING, { replace: true });
+    } catch (err) {
+      console.error('Unexpected error during logout:', err);
+      // Still navigate to ensure user can log out
+      navigate(PATHS.LANDING, { replace: true });
+    } finally {
+      // Reset logging out state after a short delay to allow navigation
+      setTimeout(() => {
+        setIsLoggingOut(false);
+      }, 1000);
+    }
   };
   
   const handleTourClose = () => {

@@ -8,11 +8,11 @@ import {
 import { PATHS } from '../constants/paths';
 
 interface SidebarProps {
-  user: User;
-  onLogout: () => void;
-  onHelpClick: () => void;
-  isCollapsed: boolean;
-  closeMobileSidebar: () => void;
+    user: User;
+    onLogout: (e?: React.MouseEvent) => void;
+    onHelpClick: () => void;
+    isCollapsed: boolean;
+    closeMobileSidebar: () => void;
 }
 
 const NavItem: React.FC<{
@@ -128,8 +128,13 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
                             <div className="ml-3">
                                 <p className="text-sm font-bold text-gray-800">{user.username}</p>
                                 <button
-                                    onClick={onLogout}
-                                    className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onLogout(e);
+                                    }}
+                                    className="text-xs text-red-600 hover:text-red-800 font-semibold flex items-center transition-colors"
+                                    type="button"
                                 >
                                     <div className="w-3 h-3 mr-1"><LogoutIcon /></div>
                                     Logout
@@ -139,9 +144,14 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
                         
                         {isCollapsed && (
                             <button 
-                                onClick={onLogout} 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onLogout(e);
+                                }} 
                                 title="Logout" 
-                                className="relative group mt-3 text-gray-600 hover:text-red-600 p-2 rounded-lg hover:bg-red-50"
+                                className="relative group mt-3 text-gray-600 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                type="button"
                             >
                                 <div className="w-5 h-5"><LogoutIcon /></div>
                                 <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-20">
