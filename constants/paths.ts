@@ -10,6 +10,7 @@ export const PATHS = {
   GALLERY: '/gallery',
   ASSET_COLLECTION: '/asset_collection',
   PRICING: '/pricing',
+  PROFILE: '/profile',
   SETTINGS: '/settings',
   ABOUT: '/about',
   MODEL_GALLERY: '/model_gallery',

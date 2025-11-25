@@ -8,6 +8,7 @@ import AssetGeneratorPage from './pages/AssetGeneratorPage';
 import LandingPage from './pages/LandingPage';
 import CatalogForgedPage from './pages/CatalogForgedPage';
 import AboutPage from './pages/AboutPage';
+import ProfilePage from './pages/ProfilePage';
 import StyleScenePage from './pages/StyleScenePage';
 import ModelGalleryPage from './pages/ModelGalleryPage';
 import BackgroundGalleryPage from './pages/BackgroundGalleryPage';
@@ -427,6 +428,7 @@ const App: React.FC = () => {
                       />
                   } />
                   <Route path={PATHS.PRICING} element={<AboutPage />} />
+                  <Route path={PATHS.PROFILE} element={<ProfilePage user={currentUser} />} />
                   <Route path={PATHS.SETTINGS} element={<AboutPage />} />
                   <Route path={PATHS.ABOUT} element={<AboutPage />} />
                   {/* Catch-all for logged-in users shows a 404 within the app layout */}

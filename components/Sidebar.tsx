@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { User } from '../types';
 import { 
     VirtualPhotoshootIcon, AssetGeneratorIcon, ProductForgeIcon, StyleSceneIcon,
-    GalleryIcon, PricingIcon, SettingsIcon, HelpIcon, LogoutIcon
+    GalleryIcon, PricingIcon, SettingsIcon, ProfileIcon, HelpIcon, LogoutIcon
 } from './icons';
 import { PATHS } from '../constants/paths';
 
@@ -56,6 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
         { path: PATHS.GALLERY, icon: <GalleryIcon />, label: 'My Gallery' },
         { path: PATHS.ASSET_COLLECTION, icon: <AssetGeneratorIcon />, label: 'Asset Collection' },
         { path: PATHS.PRICING, icon: <PricingIcon />, label: 'Pricing & Usage' },
+        { path: PATHS.PROFILE, icon: <ProfileIcon />, label: 'Profile' },
         { path: PATHS.SETTINGS, icon: <SettingsIcon />, label: 'Settings' },
     ];
 
