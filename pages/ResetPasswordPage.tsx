@@ -162,10 +162,10 @@ const ResetPasswordPage: React.FC = () => {
 
   if (checkingSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white">
         <div className="w-full max-w-sm p-8 bg-white text-[#2E1E1E] rounded-2xl shadow-2xl">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 border-4 border-[#9F1D35] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-gray-600">Verifying reset link...</p>
           </div>
         </div>
@@ -174,15 +174,18 @@ const ResetPasswordPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white">
       <div className="w-full max-w-sm p-8 bg-white text-[#2E1E1E] rounded-2xl shadow-2xl">
         <div className="text-center mb-8">
-            <h1 
-                className="text-3xl font-bold text-gray-800 font-headline cursor-pointer"
-                onClick={() => navigate(PATHS.LANDING)}
-            >
-                ZOLA AI
-            </h1>
+          <div className="flex justify-center mb-4">
+            <div className="w-20 h-20 bg-sky-500 rounded-2xl flex items-center justify-center shadow-xl shadow-sky-500/20 cursor-pointer hover:opacity-90 transition-opacity" onClick={() => navigate(PATHS.LANDING)}>
+              <img 
+                src="https://i.postimg.cc/BQ63Y0dw/Frame-13.png" 
+                alt="Zola AI Logo" 
+                className="w-12 h-12 object-contain"
+              />
+            </div>
+          </div>
         </div>
 
         {success ? (
@@ -200,7 +203,7 @@ const ResetPasswordPage: React.FC = () => {
             </p>
             <button
               onClick={() => navigate(PATHS.AUTH)}
-              className="mt-8 w-full py-3 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors"
+              className="mt-8 w-full py-3 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 transition-colors"
             >
               Go to Login
             </button>
@@ -228,7 +231,7 @@ const ResetPasswordPage: React.FC = () => {
                       setPasswordStrengthError('');
                       setPasswordMatchError('');
                     }}
-                    className={`w-full px-1 py-3 pr-10 bg-transparent border-b-2 ${passwordStrengthError ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:border-[#9F1D35] transition-colors`}
+                    className={`w-full px-1 py-3 pr-10 bg-transparent border-b-2 ${passwordStrengthError ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:border-sky-500 transition-colors`}
                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                     required
                   />
@@ -273,7 +276,7 @@ const ResetPasswordPage: React.FC = () => {
                       setConfirmPassword(e.target.value);
                       setPasswordMatchError('');
                     }}
-                    className={`w-full px-1 py-3 pr-10 bg-transparent border-b-2 ${passwordMatchError ? 'border-red-500' : password && confirmPassword && password === confirmPassword ? 'border-green-500' : 'border-gray-200'} focus:outline-none focus:border-[#9F1D35] transition-colors`}
+                    className={`w-full px-1 py-3 pr-10 bg-transparent border-b-2 ${passwordMatchError ? 'border-red-500' : password && confirmPassword && password === confirmPassword ? 'border-green-500' : 'border-gray-200'} focus:outline-none focus:border-sky-500 transition-colors`}
                     placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                     required
                   />
@@ -298,7 +301,7 @@ const ResetPasswordPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => navigate(PATHS.AUTH)}
-                      className="w-full py-2 text-sm text-[#9F1D35] font-semibold hover:underline"
+                      className="w-full py-2 text-sm text-sky-600 font-semibold hover:underline"
                     >
                       Request a new reset link →
                     </button>
@@ -308,7 +311,7 @@ const ResetPasswordPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading || !!error}
-                className="w-full py-3 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? 'Updating...' : 'Update Password'}
               </button>

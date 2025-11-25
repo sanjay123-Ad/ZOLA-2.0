@@ -654,9 +654,9 @@ const AuthPage: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="w-full md:w-7/12 bg-white p-8 md:p-12 relative">
+        <div className="w-full md:w-7/12 bg-white p-8 md:p-12 relative flex items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-white/80" />
-          <div className="relative max-w-md mx-auto">
+          <div className={`relative max-w-md mx-auto w-full ${!['login', 'register'].includes(view) ? 'flex flex-col justify-center' : ''}`}>
             {['login', 'register'].includes(view) && (
               <div className="flex flex-col items-center mb-8">
                 <div className="w-20 h-20 bg-sky-500 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-sky-500/20">
