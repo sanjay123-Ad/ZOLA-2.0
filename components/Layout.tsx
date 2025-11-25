@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
   };
 
   return (
-    <div className="h-screen flex bg-[#FAFAFA]">
+    <div className="h-screen flex bg-white">
       {/* Static Sidebar for Desktop */}
       <div className="hidden lg:flex relative">
         <Sidebar 
@@ -76,8 +76,14 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="lg:hidden bg-white/80 backdrop-blur-md border-b p-4 flex items-center justify-between z-10">
-          <h1 className="text-lg font-bold font-headline text-[#2E1E1E]">ZOLA AI</h1>
+        <header className="lg:hidden bg-white/80 backdrop-blur-md border-b border-gray-200 p-4 flex items-center justify-between z-10">
+          <div className="flex items-center gap-3">
+            <img src="https://i.postimg.cc/BQ63Y0dw/Frame-13.png" alt="Zola AI Fashion Studio" className="h-8 object-contain" />
+            <div className="flex flex-col">
+              <span className="text-[#2E1E1E] text-lg font-bold font-headline">ZOLA AI</span>
+              <span className="text-gray-600 text-xs font-medium">Fashion Studio</span>
+            </div>
+          </div>
           <button onClick={() => setMobileSidebarOpen(true)} className="text-gray-600 p-2">
             <HamburgerIcon />
           </button>

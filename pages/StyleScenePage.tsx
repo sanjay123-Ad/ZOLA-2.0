@@ -119,7 +119,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             removeState(SESSION_STORAGE_KEY);
         }
 
-        // --- 1.5. Load persistent collections from localStorage (for each pose) ---
+        // --- 1.5. Load persistent collections from localStorage and sessionStorage (for each pose) ---
         // Check all localStorage keys that match the pattern background_collection_*
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -127,7 +127,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 const poseId = key.replace('background_collection_', '');
                 try {
                     const collection = loadState<CollectionItem[]>(key);
-                    if (collection) {
+                    if (collection && Array.isArray(collection) && collection.length > 0) {
                         // Merge with existing collections, but persistent storage takes precedence
                         loadedCollections = { ...loadedCollections, [poseId]: collection };
                     }
@@ -136,17 +136,45 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 }
             }
         }
+        
+        // Also check sessionStorage for collections (in case they're stored there)
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i);
+            if (key && key.startsWith('background_collection_')) {
+                const poseId = key.replace('background_collection_', '');
+                // Only load if not already loaded from localStorage
+                if (!loadedCollections[poseId]) {
+                    try {
+                        const collectionJSON = sessionStorage.getItem(key);
+                        if (collectionJSON) {
+                            const collection = JSON.parse(collectionJSON);
+                            if (collection && Array.isArray(collection) && collection.length > 0) {
+                                loadedCollections = { ...loadedCollections, [poseId]: collection };
+                                // Also save to localStorage for persistence
+                                saveState(key, collection);
+                            }
+                        }
+                    } catch (e) {
+                        console.error(`Failed to parse sessionStorage collection for pose ${poseId}`, e);
+                    }
+                }
+            }
+        }
 
         // --- 2. Check for updates from Background Gallery and merge ---
         const poseId = sessionStorage.getItem('updated_image_pose_id'); // Keep sessionStorage for temporary bridge data
         if (poseId) {
-            const updatedCollection = loadState<CollectionItem[]>(`updated_image_collection_${poseId}`);
-            if (updatedCollection) {
+            // Try to load from the updated_image_collection key (without poseId suffix)
+            const updatedCollectionJSON = sessionStorage.getItem('updated_image_collection');
+            if (updatedCollectionJSON) {
                 try {
+                    const updatedCollection = JSON.parse(updatedCollectionJSON);
                     loadedCollections = { ...loadedCollections, [poseId]: updatedCollection };
                     // Also update the persistent storage
                     saveState(`background_collection_${poseId}`, updatedCollection);
-                } catch (e) { console.error("Failed to parse updated collection", e); }
+                } catch (e) { 
+                    console.error("Failed to parse updated collection", e); 
+                }
             }
 
             const newImageUrl = sessionStorage.getItem('updated_image_url');
@@ -482,7 +510,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
     return (
       <div className="mt-8 pt-6 border-t border-gray-200/80 animate-fade-in">
         <h3 className="text-xl font-bold text-gray-800 mb-4">
-          <span aria-hidden="true" className="text-white bg-[#9F1D35] rounded-full w-8 h-8 inline-flex items-center justify-center text-sm font-headline">{stepNumber}</span>
+          <span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-8 h-8 inline-flex items-center justify-center text-sm font-headline">{stepNumber}</span>
           {title}
         </h3>
         {children}
@@ -493,7 +521,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
   if (currentView === 'generate' && generationTarget) {
     const garmentImageToGenerate = generationTarget.garmentView === 'front' ? garmentFrontImage : garmentBackImage;
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 animate-fade-in">
+        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 animate-fade-in bg-gradient-to-b from-sky-50 via-white to-white">
             <main className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-[#2E1E1E] font-headline">Confirm Generation</h1>
@@ -512,7 +540,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                 <div className="mt-10 pt-6 border-t border-gray-200 flex flex-col items-center gap-4">
                     <button
                         onClick={handleGenerate}
-                        className="px-12 py-4 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-all duration-300"
+                        className="px-12 py-4 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 transition-all duration-300"
                     >
                         Generate Image
                     </button>
@@ -527,7 +555,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
         <main className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
           <div className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Style|Scene Campaign Director</h1>
@@ -537,8 +565,8 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
           <div className="max-w-4xl mx-auto">
             {renderStep("Upload Garment (Front & Back)", 1, true, (
               <>
-                <div className="bg-[#9F1D35]/5 border-l-4 border-[#9F1D35]/50 p-4 rounded-r-lg mb-6">
-                    <h3 className="font-bold text-[#9F1D35]">Input Pre-requisites for Best Results:</h3>
+                <div className="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-r-lg mb-6">
+                    <h3 className="font-bold text-sky-600">Input Pre-requisites for Best Results:</h3>
                     <ul className="list-disc list-inside text-[#2E1E1E]/80 text-sm mt-2 space-y-1">
                         <li><b>Garment Isolation (CRITICAL):</b> Uploaded garments MUST be clean, clearly visible, and fully isolated (preferably from a Ghost Mannequin or Flat-Lay shot).</li>
                          <li><b>Provide Both Views:</b> For the highest accuracy, upload both the front and back views of your garment.</li>
@@ -559,14 +587,14 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                             <div>
                                 <h4 className="font-bold text-gray-800">Selected Model</h4>
                                 <p className="text-sm text-gray-600">{selectedModel.label} ({selectedModel.gender})</p>
-                                <button onClick={() => { setModelId(null); setGender(null); }} className="mt-2 text-xs text-[#9F1D35] font-semibold hover:underline">Change Model</button>
+                                <button onClick={() => { setModelId(null); setGender(null); }} className="mt-2 text-xs text-sky-600 font-semibold hover:underline">Change Model</button>
                             </div>
                         </div>
                     ) : (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Select Model Gender</label>
                             <div className="flex gap-2 mb-4">
-                                {GENDERS.map(g => <button key={g.id} onClick={() => setGender(g.id as any)} className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${gender === g.id ? 'bg-[#9F1D35]/10 border-[#9F1D35]' : 'bg-white border-gray-300 hover:border-gray-400'}`}>{g.name}</button>)}
+                                {GENDERS.map(g => <button key={g.id} onClick={() => setGender(g.id as any)} className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${gender === g.id ? 'bg-sky-50 border-sky-600' : 'bg-white border-gray-300 hover:border-gray-400'}`}>{g.name}</button>)}
                             </div>
                             <button
                                 onClick={() => {
@@ -611,7 +639,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                                         className={`mt-1 w-full text-xs font-semibold py-1.5 rounded-full transition-colors flex items-center justify-center h-7 ${
                                             state.status === 'success' ? 'bg-green-100 text-green-800 cursor-default' : 
                                             state.status === 'error' ? 'bg-red-500 text-white' :
-                                            'bg-[#9F1D35] text-white hover:bg-[#80172a] disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                            'bg-sky-600 text-white hover:bg-sky-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
                                         }`}
                                     >
                                         {buttonText}
@@ -685,7 +713,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             {error && <p className="mt-6 text-red-600 text-center bg-red-50 p-3 rounded-lg border border-red-300">{error}</p>}
 
             <div className="mt-10 pt-6 border-t border-gray-200 flex flex-col items-center">
-              <button onClick={handleStartOver} className="text-[#9F1D35] hover:text-[#80172a] font-semibold">
+              <button onClick={handleStartOver} className="text-sky-600 hover:text-sky-700 font-semibold">
                 Start Over With a New Garment
               </button>
             </div>
@@ -706,7 +734,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
               <button
                 onClick={() => handleStartGeneration(poseToGenerate, 'front')}
                 disabled={!garmentFrontImage}
-                className="w-full px-6 py-3 bg-[#9F1D35] text-white font-semibold rounded-lg shadow-md hover:bg-[#80172a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Use Front View
               </button>

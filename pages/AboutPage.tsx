@@ -4,7 +4,7 @@ interface AboutPageProps {}
 
 const AboutPage: React.FC<AboutPageProps> = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
       <main className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 lg:p-12 border border-gray-200/50">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
@@ -14,7 +14,7 @@ const AboutPage: React.FC<AboutPageProps> = () => {
 
           <div className="space-y-12">
             <section>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#9F1D35] mb-4">Our Features</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">Our Features</h2>
               <div className="space-y-6 text-gray-700">
                 <div>
                   <h3 className="font-bold text-lg text-[#2E1E1E]">Virtual Photoshoot (Seamless Swap)</h3>
@@ -32,7 +32,7 @@ const AboutPage: React.FC<AboutPageProps> = () => {
             </section>
             
             <section>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#9F1D35] mb-4">How AI Powers ZOLA AI</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">How AI Powers ZOLA AI</h2>
               <div className="space-y-4 text-gray-700">
                 <p>
                   Our entire platform is built on Google's state-of-the-art multimodal AI model, Gemini. Unlike older AI, Gemini doesn't just "see" your images; it understands them on a deeper level.
@@ -44,7 +44,7 @@ const AboutPage: React.FC<AboutPageProps> = () => {
             </section>
             
             <section>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#9F1D35] mb-4">About Us</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-sky-600 mb-4">About Us</h2>
               <div className="space-y-4 text-gray-700">
                 <p>
                   <strong>Our Mission:</strong> To democratize high-end e-commerce photography for fashion brands of all sizes.

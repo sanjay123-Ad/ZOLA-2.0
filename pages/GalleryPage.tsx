@@ -76,7 +76,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ user, assets, isLoading, erro
   };
   
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
       <div className="w-full max-w-7xl mx-auto">
         <header className="mb-8 flex flex-wrap justify-between items-center gap-4">
             <div>

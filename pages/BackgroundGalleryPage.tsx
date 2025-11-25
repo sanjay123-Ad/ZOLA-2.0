@@ -152,9 +152,11 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
     if (!generatedImage || !poseId) return;
     setCollection(prev => {
         const newCollection = [...prev, generatedImage];
-        // Persist collection to sessionStorage immediately
+        // Persist collection to both sessionStorage and localStorage
         const collectionKey = `background_collection_${poseId}`;
         sessionStorage.setItem(collectionKey, JSON.stringify(newCollection));
+        // Also save to localStorage for persistence across sessions
+        localStorage.setItem(collectionKey, JSON.stringify(newCollection));
         return newCollection;
     });
     setGeneratedImage(null);
@@ -162,9 +164,10 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
 
   const handleBack = () => {
     if (poseId) {
-        // Ensure collection is saved to persistent storage before going back
+        // Ensure collection is saved to both sessionStorage and localStorage before going back
         const collectionKey = `background_collection_${poseId}`;
         sessionStorage.setItem(collectionKey, JSON.stringify(collection));
+        localStorage.setItem(collectionKey, JSON.stringify(collection));
         
         // Pass the updated collection and the last image URL back to the main page
         sessionStorage.setItem('updated_image_collection', JSON.stringify(collection));

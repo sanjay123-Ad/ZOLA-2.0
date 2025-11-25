@@ -480,7 +480,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     if (!isVisible) return null;
     return (
       <div className="mt-8 pt-6 border-t border-gray-200/80 animate-fade-in">
-        <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-[#9F1D35] rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">{number}</span>{title}</h3>
+        <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">{number}</span>{title}</h3>
         {children}
       </div>
     )
@@ -497,7 +497,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
 
   return (
     <>
-    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
       <main className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
         <div className="text-center mb-2">
           <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Virtual Photoshoot & Seamless Swap</h1>
@@ -506,8 +506,8 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
         {/* --- PREPARATION VIEW --- */}
         {!generatedImage && !isLoading && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#9F1D35]/5 border-l-4 border-[#9F1D35]/50 p-4 rounded-r-lg mb-8">
-                <h3 className="font-bold text-[#9F1D35]">Instructions for a Perfect Fit:</h3>
+            <div className="bg-sky-600/5 border-l-4 border-sky-600/50 p-4 rounded-r-lg mb-8">
+                <h3 className="font-bold text-sky-600">Instructions for a Perfect Fit:</h3>
                 <p className="text-[#2E1E1E]/80 text-sm mt-1">
                     For best results, provide the AI with context. Select a gender, then upload clear photos for the person and the garment.
                 </p>
@@ -515,14 +515,14 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
 
             {/* Step 1: Gender */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-[#9F1D35] rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
               <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => setGender('Male')} aria-pressed={gender === 'Male'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-[#9F1D35] bg-[#9F1D35]/5 ring-2 ring-[#9F1D35]/30' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-[#9F1D35]"><MaleIcon/></span>
+                <button onClick={() => setGender('Male')} aria-pressed={gender === 'Male'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 bg-sky-600/5 ring-2 ring-sky-600/30' : 'border-gray-300 hover:border-gray-400'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600"><MaleIcon/></span>
                   <span className="font-semibold text-gray-800">Male</span>
                 </button>
-                <button onClick={() => setGender('Female')} aria-pressed={gender === 'Female'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-[#9F1D35] bg-[#9F1D35]/5 ring-2 ring-[#9F1D35]/30' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-[#9F1D35]"><FemaleIcon/></span>
+                <button onClick={() => setGender('Female')} aria-pressed={gender === 'Female'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 bg-sky-600/5 ring-2 ring-sky-600/30' : 'border-gray-300 hover:border-gray-400'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600"><FemaleIcon/></span>
                   <span className="font-semibold text-gray-800">Female</span>
                 </button>
               </div>
@@ -553,7 +553,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                     type="text"
                     value={garmentDescription}
                     onChange={(e) => setGarmentDescription(e.target.value)}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9F1D35] focus:border-transparent transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent transition"
                     placeholder="e.g., a women's blue Anarkali style Kurti"
                   />
                   {garmentSuggestions.length > 0 && (
@@ -569,7 +569,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                                 }
                             }}
                             title={`Add "${suggestion}"`}
-                            className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium hover:bg-[#9F1D35]/10 hover:text-[#9F1D35] transition-colors"
+                            className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium hover:bg-sky-600/10 hover:text-sky-600 transition-colors"
                           >
                             + {suggestion}
                           </button>
@@ -585,11 +585,11 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
             <Section title="Choose What to Swap" number={4} isVisible={garmentDescription !== ''}>
               <div className="flex flex-col md:flex-row md:space-x-6 space-y-3 md:space-y-0">
                 <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                  <input type="checkbox" checked={swapUpperBody} onChange={(e) => setSwapUpperBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-[#9F1D35] focus:ring-[#9F1D35]" />
+                  <input type="checkbox" checked={swapUpperBody} onChange={(e) => setSwapUpperBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-600" />
                   <span className="text-gray-700 font-medium">Swap Upper Body Garment (Top/Shirt/Jacket)</span>
                 </label>
                 <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                  <input type="checkbox" checked={swapLowerBody} onChange={(e) => setSwapLowerBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-[#9F1D35] focus:ring-[#9F1D35]" />
+                  <input type="checkbox" checked={swapLowerBody} onChange={(e) => setSwapLowerBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-600" />
                   <span className="text-gray-700 font-medium">Swap Lower Body Garment (Pant/Skirt/Shorts)</span>
                 </label>
               </div>
@@ -622,7 +622,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                       <button
                         key={value}
                         onClick={() => setBackgroundOption(value)}
-                        className={`px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out m-0.5 ${backgroundOption === value ? 'bg-white text-[#9F1D35] shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
+                        className={`px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out m-0.5 ${backgroundOption === value ? 'bg-white text-sky-600 shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
                         aria-pressed={backgroundOption === value}
                         title={label}
                       >
@@ -639,7 +639,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                             <button
                                 key={value}
                                 onClick={() => setAspectRatio(value)}
-                                className={`px-4 sm:px-6 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out ${aspectRatio === value ? 'bg-white text-[#9F1D35] shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
+                                className={`px-4 sm:px-6 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out ${aspectRatio === value ? 'bg-white text-sky-600 shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
                                 aria-pressed={aspectRatio === value}
                                 title={label}
                             >
@@ -649,7 +649,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                     </div>
                 </div>
                 
-                <button onClick={handleGenerate} disabled={isGeneratingDisabled} className="px-12 py-4 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9F1D35] transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none">
+                <button onClick={handleGenerate} disabled={isGeneratingDisabled} className="px-12 py-4 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-600 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none">
                   Generate Photoshoot
                 </button>
                 {error && (<div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center"><p>{error}</p></div>)}
@@ -688,13 +688,13 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
               <button onClick={handleShare} className="flex items-center justify-center px-6 py-3 bg-white text-gray-700 border border-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
                 <ShareIcon className="h-5 w-5 mr-2" /> {shareFeedback}
               </button>
-              <button onClick={handleSave} disabled={isSaved} className="flex items-center justify-center px-6 py-3 bg-white text-[#9F1D35] border border-[#9F1D35] font-semibold rounded-full shadow-sm hover:bg-[#9F1D35]/5 transition-colors disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed min-w-[180px]">
+              <button onClick={handleSave} disabled={isSaved} className="flex items-center justify-center px-6 py-3 bg-white text-sky-600 border border-sky-600 font-semibold rounded-full shadow-sm hover:bg-sky-600/5 transition-colors disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed min-w-[180px]">
                 {isSaved ? '✓ Saved!' : <><SaveIcon /> Save to Gallery</>}
               </button>
             </div>
             {error && (<div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center text-sm"><p>{error}</p></div>)}
             <div className="text-center mt-8 pt-6 border-gray-200">
-              <button onClick={handleStartOver} className="text-[#9F1D35] hover:text-[#80172a] font-semibold">
+              <button onClick={handleStartOver} className="text-sky-600 hover:text-[sky-700] font-semibold">
                 Start Over
               </button>
             </div>

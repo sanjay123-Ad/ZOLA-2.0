@@ -316,7 +316,7 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
               <img src={result.dataUrl} alt={`${garment.id} ${view} mannequin`} className="w-full h-full object-contain" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="absolute bottom-2 left-2 right-2 flex flex-col gap-2">
-                  <button onClick={() => !isSaved && handleSave(garment, view)} disabled={isSaved} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 text-sm text-[#9F1D35] border border-[#9F1D35] font-semibold rounded-full shadow-sm hover:bg-[#9F1D35]/5 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed">
+                  <button onClick={() => !isSaved && handleSave(garment, view)} disabled={isSaved} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 text-sm text-sky-600 border border-sky-600 font-semibold rounded-full shadow-sm hover:bg-sky-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed">
                     <SaveIcon /> {isSaved ? '✓ Saved' : 'Save'}
                   </button>
                   <button onClick={() => handleDownload(result.dataUrl, filename)} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
@@ -332,7 +332,7 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
     
     if (isStateLoading) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-sky-50 via-white to-white">
                 <Spinner />
                 <p className="mt-4 text-gray-600">Loading your session...</p>
             </div>
@@ -340,7 +340,7 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
             <main className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Catalog | Forged (Batch Mode)</h1>
@@ -352,12 +352,12 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                         <div className="mb-8">
                             <label className="block text-lg font-bold text-gray-800 mb-4">Step 1: Select Gender</label>
                              <div className="grid grid-cols-2 gap-4">
-                                <button type="button" onClick={() => { setGender('Male'); setGarmentType(null); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-[#9F1D35] bg-[#9F1D35]/5' : 'border-gray-300 hover:border-gray-400'}`}>
-                                    <span className="w-10 h-10 mb-2 text-[#9F1D35]"><MaleIcon/></span>
+                                <button type="button" onClick={() => { setGender('Male'); setGarmentType(null); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
+                                    <span className="w-10 h-10 mb-2 text-sky-600"><MaleIcon/></span>
                                     <span className="font-semibold text-gray-800">Male</span>
                                 </button>
-                                <button type="button" onClick={() => { setGender('Female'); setGarmentType('full'); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-[#9F1D35] bg-[#9F1D35]/5' : 'border-gray-300 hover:border-gray-400'}`}>
-                                    <span className="w-10 h-10 mb-2 text-[#9F1D35]"><FemaleIcon/></span>
+                                <button type="button" onClick={() => { setGender('Female'); setGarmentType('full'); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
+                                    <span className="w-10 h-10 mb-2 text-sky-600"><FemaleIcon/></span>
                                     <span className="font-semibold text-gray-800">Female</span>
                                 </button>
                             </div>
@@ -367,8 +367,8 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                             <div className="mb-8 animate-fade-in">
                                 <label className="block text-lg font-bold text-gray-800 mb-4">Step 2: Select Garment Type</label>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <button type="button" onClick={() => setGarmentType('upper')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'upper' ? 'border-[#9F1D35] bg-[#9F1D35]/5' : 'border-gray-300 hover:border-gray-400'}`}>Upper Body</button>
-                                    <button type="button" onClick={() => setGarmentType('lower')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'lower' ? 'border-[#9F1D35] bg-[#9F1D35]/5' : 'border-gray-300 hover:border-gray-400'}`}>Lower Body</button>
+                                    <button type="button" onClick={() => setGarmentType('upper')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'upper' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>Upper Body</button>
+                                    <button type="button" onClick={() => setGarmentType('lower')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'lower' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>Lower Body</button>
                                 </div>
                             </div>
                         )}
@@ -381,15 +381,15 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                         </div>
                         
                         <div className="text-center">
-                            <button type="submit" disabled={!gender || !garmentType} className="mt-4 px-12 py-4 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">Proceed to Uploads</button>
+                            <button type="submit" disabled={!gender || !garmentType} className="mt-4 px-12 py-4 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">Proceed to Uploads</button>
                         </div>
                     </form>
                 )}
 
                 {view === 'upload' && (
                     <div className="animate-fade-in">
-                        <div className="bg-[#9F1D35]/5 border-l-4 border-[#9F1D35]/50 p-4 rounded-r-lg mb-8">
-                            <h3 className="font-bold text-[#9F1D35]">Input Pre-requisites for Best Results:</h3>
+                        <div className="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-r-lg mb-8">
+                            <h3 className="font-bold text-sky-600">Input Pre-requisites for Best Results:</h3>
                             <ul className="list-disc list-inside text-[#2E1E1E]/80 text-sm mt-2 space-y-1">
                                 <li><b>Clear Photos:</b> For best results, use flat-lay or on-hanger product photos with a clean background.</li>
                                 <li><b>Provide Both Views:</b> Ensure you upload a front and back image for each garment to get a complete set.</li>
@@ -424,8 +424,8 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                             >
                                 + Add Another Garment
                             </button>
-                            <button onClick={handleProcessBatch} disabled={!isUploadComplete || isProcessing} className="w-full sm:w-auto px-12 py-4 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                {isProcessing ? 'Processing...' : `Process ${garments.length} Garment(s)`}
+                            <button onClick={handleProcessBatch} disabled={!isUploadComplete || isProcessing} className="w-full sm:w-auto px-12 py-4 bg-sky-600 text-white font-semibold rounded-full shadow-lg hover:bg-sky-700 transition-colors disabled:bg-gray-400 disabled:text-gray-300 disabled:cursor-not-allowed">
+                                {isProcessing ? 'Processing...' : `Process ${garments.length} Garment${garments.length !== 1 ? 's' : ''}`}
                             </button>
                         </div>
                     </div>

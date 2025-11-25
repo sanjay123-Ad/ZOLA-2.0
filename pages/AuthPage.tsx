@@ -363,19 +363,19 @@ const AuthPage: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-sm"
                 placeholder="you@example.com"
                 required
               />
             </div>
             {error && <p className="text-red-500 text-xs">{error}</p>}
-            <button type="submit" disabled={loading} className="w-full bg-rose-600 text-white py-3 rounded-full font-semibold shadow-lg hover:bg-rose-700 transition-all">
+            <button type="submit" disabled={loading} className="w-full bg-sky-600 text-white py-3 rounded-full font-semibold shadow-lg hover:bg-sky-700 transition-all">
               {loading ? 'Sending...' : 'Send reset link'}
             </button>
           </form>
           <p className="text-sm text-gray-500 mt-6 text-center">
             Remembered it?{' '}
-            <button onClick={() => setView('login')} className="text-rose-600 font-semibold hover:underline">
+            <button onClick={() => setView('login')} className="text-sky-600 font-semibold hover:underline">
               Back to login
             </button>
           </p>
@@ -411,18 +411,6 @@ const AuthPage: React.FC = () => {
 
   const renderPrimaryView = () => (
     <div className="animate-fade-in">
-      {view === 'login' ? (
-        <>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Welcome to ZOLA AI</h1>
-          <p className="text-gray-500 mb-6 text-sm">Use your email or another service to continue with ZOLA AI for FREE</p>
-        </>
-      ) : (
-        <>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create an Account</h1>
-          <p className="text-gray-500 mb-6 text-sm">Get started with 10 free generations.</p>
-        </>
-      )}
-
       <div className="bg-white/80 rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
         <form onSubmit={handleSubmit} className="space-y-5">
           {view === 'register' && (
@@ -433,7 +421,7 @@ const AuthPage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. fashion_house"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-sm"
               />
             </div>
           )}
@@ -455,10 +443,10 @@ const AuthPage: React.FC = () => {
                 placeholder="you@example.com"
                 className={`w-full px-4 py-3 rounded-xl border ${
                   emailError ? 'border-red-300 bg-red-50/50' : 'border-gray-200 bg-gray-50/60'
-                } focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none text-sm`}
+                } focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-sm`}
                 required
               />
-              {checkingEmail && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-200 border-t-rose-500 rounded-full animate-spin" />}
+              {checkingEmail && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-200 border-t-sky-500 rounded-full animate-spin" />}
             </div>
             {emailError && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><IconAlertCircle className="w-3 h-3" /> {emailError}</p>}
           </div>
@@ -476,11 +464,11 @@ const AuthPage: React.FC = () => {
                 placeholder="••••••••"
                 className={`w-full px-4 py-3 pr-10 rounded-xl border ${
                   passwordStrengthError ? 'border-red-300 bg-red-50/40' : 'border-gray-200 bg-gray-50/60'
-                } focus:border-rose-500 focus:ring-2 focus:ring-rose-100 outline-none text-sm`}
+                } focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-sm`}
                 required
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-3 text-gray-400 hover:text-gray-600">
-                {showPassword ? <IconEyeOff className="w-4.5 h-4.5" /> : <IconEye className="w-4.5 h-4.5" />}
+                {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
               </button>
             </div>
             {view === 'register' && (
@@ -500,7 +488,7 @@ const AuthPage: React.FC = () => {
 
           {view === 'login' && (
             <div className="text-right text-xs font-semibold text-gray-500">
-              <button type="button" onClick={() => setView('forgot_password')} className="hover:text-rose-500">
+              <button type="button" onClick={() => setView('forgot_password')} className="hover:text-sky-500">
                 Forgot password?
               </button>
             </div>
@@ -512,7 +500,7 @@ const AuthPage: React.FC = () => {
             type="submit"
             disabled={loading}
             className={`w-full py-3 rounded-full font-bold shadow-lg transition-all ${
-              view === 'login' ? 'bg-slate-900 text-white hover:-translate-y-0.5' : 'bg-rose-600 text-white hover:bg-rose-700'
+              view === 'login' ? 'bg-slate-900 text-white hover:-translate-y-0.5' : 'bg-sky-600 text-white hover:bg-sky-700'
             } disabled:bg-gray-300 disabled:cursor-not-allowed`}
           >
             {loading ? 'Processing...' : view === 'login' ? 'Continue with Email' : 'Create Account'}
@@ -546,7 +534,7 @@ const AuthPage: React.FC = () => {
               setEmailExists(false);
               setCheckingEmail(false);
             }}
-            className="text-rose-600 font-semibold hover:underline"
+            className="text-sky-600 font-semibold hover:underline"
           >
             {view === 'login' ? 'Sign up' : 'Login'}
           </button>
@@ -561,15 +549,12 @@ const AuthPage: React.FC = () => {
     <div className="relative min-h-screen w-full flex items-center justify-center bg-gray-50 py-12 px-4">
       <BackgroundNetwork />
       <div className="relative z-10 w-full max-w-[1100px] bg-white/95 backdrop-blur-sm border border-white/70 rounded-[40px] shadow-2xl flex flex-col md:flex-row overflow-hidden">
-        <div className="w-full md:w-5/12 relative p-8 md:p-10 text-white bg-gradient-to-br from-rose-500 via-rose-600 to-rose-800 flex flex-col overflow-hidden">
+        <div className="w-full md:w-5/12 relative p-8 md:p-10 text-white bg-gradient-to-br from-sky-500 via-sky-600 to-blue-700 flex flex-col overflow-hidden">
           <div className="absolute inset-0 opacity-80">
             <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=1000&q=80" alt="Fashion presenter" className="w-full h-full object-cover object-top" />
-            <div className="absolute inset-0 bg-gradient-to-b from-rose-900/60 via-transparent to-rose-900" />
+            <div className="absolute inset-0 bg-gradient-to-b from-sky-900/60 via-transparent to-blue-900" />
           </div>
           <div className="relative flex items-center gap-3 mb-6">
-            <div onClick={() => navigate(PATHS.LANDING)} className="w-10 h-10 bg-white/10 border border-white/30 rounded-xl flex items-center justify-center cursor-pointer">
-              <img src="https://i.postimg.cc/pd8409Bg/Frame-14.png" alt="Logo" className="w-7 h-7 object-contain" />
-            </div>
             <span className="font-bold text-2xl tracking-tight">ZOLA AI</span>
           </div>
           <div className="relative flex-1 flex flex-col justify-between">
@@ -631,7 +616,7 @@ const AuthPage: React.FC = () => {
                     <h3 className="font-bold text-gray-800 text-sm">{activeFeature.mainCard.title}</h3>
                     <p className="text-[11px] text-gray-500">{activeFeature.mainCard.tagLine}</p>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center">
                     <IconZap className="w-4 h-4" />
                   </div>
                 </div>
@@ -641,14 +626,14 @@ const AuthPage: React.FC = () => {
                       <div key={label} className="flex flex-col items-center text-[9px] text-gray-500 gap-1">
                         <div
                           className={`w-9 h-9 rounded-xl border flex items-center justify-center ${
-                            idx === 2 ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white border-none shadow-lg' : 'border-gray-200 bg-white'
+                            idx === 2 ? 'bg-gradient-to-br from-sky-500 to-sky-600 text-white border-none shadow-lg' : 'border-gray-200 bg-white'
                           }`}
                         >
                           {idx === 0 && <IconUpload className="w-3.5 h-3.5" />}
                           {idx === 1 && <IconUser className="w-3.5 h-3.5" />}
                           {idx === 2 && <IconZap className="w-3.5 h-3.5" />}
                         </div>
-                        <span className={idx === 2 ? 'font-semibold text-rose-600' : ''}>{label}</span>
+                        <span className={idx === 2 ? 'font-semibold text-sky-600' : ''}>{label}</span>
                       </div>
                     ))}
                   </div>
@@ -660,7 +645,7 @@ const AuthPage: React.FC = () => {
             </div>
             <div className="relative text-center mt-6">
               <h2 className="text-3xl font-bold tracking-tight mb-2">{activeFeature.headline}</h2>
-              <p className="text-pink-100 text-sm font-medium">{activeFeature.subhead}</p>
+              <p className="text-blue-100 text-sm font-medium">{activeFeature.subhead}</p>
               <div className="flex justify-center gap-2 mt-4">
                 {FEATURES.map((_, idx) => (
                   <div key={idx} className={`h-1.5 rounded-full ${idx === activeFeatureIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
@@ -672,14 +657,31 @@ const AuthPage: React.FC = () => {
         <div className="w-full md:w-7/12 bg-white p-8 md:p-12 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-white/80" />
           <div className="relative max-w-md mx-auto">
+            {['login', 'register'].includes(view) && (
+              <div className="flex flex-col items-center mb-8">
+                <div className="w-20 h-20 bg-sky-500 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-sky-500/20">
+                  <img 
+                    src="https://i.postimg.cc/BQ63Y0dw/Frame-13.png" 
+                    alt="Zola AI Logo" 
+                    className="w-12 h-12 object-contain"
+                  />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 text-center">Welcome to ZOLA AI</h1>
+                {view === 'login' ? (
+                  <p className="text-gray-500 mb-6 text-sm text-center">Use your email or another service to continue with ZOLA AI for FREE</p>
+                ) : (
+                  <p className="text-gray-500 mb-6 text-sm text-center">Get started with 10 free generations.</p>
+                )}
+              </div>
+            )}
             {['login', 'register'].includes(view) ? renderPrimaryView() : renderStatusView()}
             <div className="mt-10 text-center text-xs text-gray-400">
               By signing in, you accept the{' '}
-              <a href="#" className="text-rose-600 hover:underline">
+              <a href="#" className="text-sky-600 hover:underline">
                 Terms of Service
               </a>{' '}
               and acknowledge our{' '}
-              <a href="#" className="text-rose-600 hover:underline">
+              <a href="#" className="text-sky-600 hover:underline">
                 Privacy Policy
               </a>
               .

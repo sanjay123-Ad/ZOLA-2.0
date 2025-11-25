@@ -19,7 +19,9 @@ const Header: React.FC<{ onLogoClick?: () => void; onStart: () => void }> = ({ o
         }`}
       >
         <button onClick={onLogoClick} className="flex items-center focus:outline-none group" aria-label="Go to homepage">
-          <img src="https://i.postimg.cc/pd8409Bg/Frame-14.png" alt="ZOLA AI" className="h-10 object-contain group-hover:opacity-80 transition-opacity" />
+          <div className="w-14 h-14 bg-sky-500 rounded-2xl flex items-center justify-center shadow-xl shadow-sky-500/20 group-hover:opacity-90 transition-opacity">
+            <img src="https://i.postimg.cc/BQ63Y0dw/Frame-13.png" alt="ZOLA AI" className="w-8 h-8 object-contain" />
+          </div>
         </button>
         <div className="hidden md:flex items-center space-x-2">
           {['Features', 'Studio', 'Pricing', 'Enterprise'].map((item) => (
