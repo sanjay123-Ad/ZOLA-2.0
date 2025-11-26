@@ -4,6 +4,7 @@ import { User } from '../types';
 import { supabase } from '../services/supabase';
 import { MaleIcon, FemaleIcon } from '../components/icons';
 import { PATHS } from '../constants/paths';
+import ImageCropper from '../components/ImageCropper';
 
 interface ProfilePageProps {
   user: User;
@@ -35,6 +36,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
   const [newAvatarPreview, setNewAvatarPreview] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -117,13 +120,32 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
     setError('');
     
-    // Store file and create preview (don't upload yet)
-    setNewAvatarFile(file);
+    // Read file and show cropper
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setShowCropper(true);
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset file input
+    e.target.value = '';
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    setNewAvatarFile(croppedFile);
     const reader = new FileReader();
     reader.onloadend = () => {
       setNewAvatarPreview(reader.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(croppedFile);
+    setShowCropper(false);
+    setImageToCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setImageToCrop(null);
   };
 
   const handleDeleteAvatar = () => {
@@ -388,6 +410,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-white p-4 sm:p-6 lg:p-8">
+      {showCropper && imageToCrop && (
+        <ImageCropper
+          imageSrc={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
       <main className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-6 sm:p-10 lg:p-12 border border-gray-200/50">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Profile</h1>
