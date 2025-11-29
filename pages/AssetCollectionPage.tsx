@@ -76,17 +76,17 @@ const AssetCollectionPage: React.FC<AssetCollectionPageProps> = ({ user, assets,
   };
   
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
       <div className="w-full max-w-7xl mx-auto">
         <header className="mb-8 flex flex-wrap justify-between items-center gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-[#2E1E1E] font-headline">Asset Collection</h1>
-              <p className="text-gray-600 mt-1">Your saved assets from the E-commerce Asset Generator.</p>
+              <h1 className="text-4xl font-bold text-[#2E1E1E] dark:text-white font-headline">Asset Collection</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">Your saved assets from the E-commerce Asset Generator.</p>
             </div>
             <button
               onClick={onRefresh}
               disabled={isLoading}
-              className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0121.5 13M20 20l-1.5-1.5A9 9 0 012.5 11" />
@@ -104,15 +104,15 @@ const AssetCollectionPage: React.FC<AssetCollectionPageProps> = ({ user, assets,
                 <p>{error}</p>
             </div>
         ) : assets.length === 0 ? (
-          <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed">
-            <h2 className="text-xl font-semibold text-gray-700">Your asset collection is empty.</h2>
-            <p className="mt-2 text-gray-500">Go to the 'Asset Generator' to create and save your first assets!</p>
+          <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Your asset collection is empty.</h2>
+            <p className="mt-2 text-gray-500 dark:text-gray-400">Go to the 'Asset Generator' to create and save your first assets!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
             {assets.map((asset) => {
               return (
-                <div key={asset.id} className="group relative aspect-[4/5] bg-gray-100 rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                <div key={asset.id} className="group relative aspect-[4/5] bg-gray-100 dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-600">
                   <img
                     src={asset.display_url}
                     alt={`${asset.asset_type} asset: ${asset.item_name}`}

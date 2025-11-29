@@ -382,7 +382,9 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             garmentImage,
             modelImageFile,
             poseReferenceImageFile,
-            pose.command // Pass the specific pose command
+            pose.command, // Pass the specific pose command
+            undefined, // fixInstruction
+            user.id
         );
         const imageUrl = await uploadStyleSceneImage(user.id, pose.id, resultBase64);
       
@@ -427,7 +429,8 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             modelImageFile,
             poseReferenceImageFile,
             pose.command, // Pass the original command
-            fixInstruction // Pass the new fix instruction
+            fixInstruction,
+            user.id
         );
         const imageUrl = await uploadStyleSceneImage(user.id, pose.id, resultBase64);
         
@@ -508,9 +511,9 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
   const renderStep = (title: string, stepNumber: number, isVisible: boolean, children: React.ReactNode) => {
     if (!isVisible) return null;
     return (
-      <div className="mt-8 pt-6 border-t border-gray-200/80 animate-fade-in">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">
-          <span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-8 h-8 inline-flex items-center justify-center text-sm font-headline">{stepNumber}</span>
+      <div className="mt-8 pt-6 border-t border-gray-200/80 dark:border-gray-700/80 animate-fade-in">
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
+          <span aria-hidden="true" className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-8 h-8 inline-flex items-center justify-center text-sm font-headline mr-3">{stepNumber}</span>
           {title}
         </h3>
         {children}
@@ -521,8 +524,8 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
   if (currentView === 'generate' && generationTarget) {
     const garmentImageToGenerate = generationTarget.garmentView === 'front' ? garmentFrontImage : garmentBackImage;
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 animate-fade-in bg-gradient-to-b from-sky-50 via-white to-white">
-            <main className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
+        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 animate-fade-in bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
+            <main className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-[#2E1E1E] font-headline">Confirm Generation</h1>
                     <p className="text-gray-600 mt-2">The AI will now swap the garment onto the model in the selected pose.</p>
@@ -555,19 +558,19 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
-        <main className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
+      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
+        <main className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
           <div className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Style|Scene Campaign Director</h1>
+            <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] dark:text-white font-headline">Style|Scene Campaign Director</h1>
             <p className="text-gray-600 mt-2 text-lg">Your AI-Powered E-commerce Photoshoot</p>
           </div>
 
           <div className="max-w-4xl mx-auto">
             {renderStep("Upload Garment (Front & Back)", 1, true, (
               <>
-                <div className="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-r-lg mb-6">
-                    <h3 className="font-bold text-sky-600">Input Pre-requisites for Best Results:</h3>
-                    <ul className="list-disc list-inside text-[#2E1E1E]/80 text-sm mt-2 space-y-1">
+                <div className="bg-sky-50 dark:bg-sky-900/20 border-l-4 border-sky-300 dark:border-sky-500 p-4 rounded-r-lg mb-6">
+                    <h3 className="font-bold text-sky-600 dark:text-sky-400">Input Pre-requisites for Best Results:</h3>
+                    <ul className="list-disc list-inside text-[#2E1E1E]/80 dark:text-gray-300 text-sm mt-2 space-y-1">
                         <li><b>Garment Isolation (CRITICAL):</b> Uploaded garments MUST be clean, clearly visible, and fully isolated (preferably from a Ghost Mannequin or Flat-Lay shot).</li>
                          <li><b>Provide Both Views:</b> For the highest accuracy, upload both the front and back views of your garment.</li>
                     </ul>
@@ -580,21 +583,21 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
             ))}
             
             {renderStep("Define Model", 2, !!garmentFrontImage && !!garmentBackImage, (
-                <div className="bg-gray-50 p-4 rounded-xl border">
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
                     {selectedModel ? (
                         <div className="flex gap-4 items-center">
                             <img src={selectedModel.fullBodyUrl} alt={selectedModel.label} className="w-24 h-32 object-cover rounded-md shadow-sm" />
                             <div>
-                                <h4 className="font-bold text-gray-800">Selected Model</h4>
-                                <p className="text-sm text-gray-600">{selectedModel.label} ({selectedModel.gender})</p>
-                                <button onClick={() => { setModelId(null); setGender(null); }} className="mt-2 text-xs text-sky-600 font-semibold hover:underline">Change Model</button>
+                                <h4 className="font-bold text-gray-800 dark:text-white">Selected Model</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">{selectedModel.label} ({selectedModel.gender})</p>
+                                <button onClick={() => { setModelId(null); setGender(null); }} className="mt-2 text-xs text-sky-600 dark:text-sky-400 font-semibold hover:underline">Change Model</button>
                             </div>
                         </div>
                     ) : (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Select Model Gender</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Model Gender</label>
                             <div className="flex gap-2 mb-4">
-                                {GENDERS.map(g => <button key={g.id} onClick={() => setGender(g.id as any)} className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${gender === g.id ? 'bg-sky-50 border-sky-600' : 'bg-white border-gray-300 hover:border-gray-400'}`}>{g.name}</button>)}
+                                {GENDERS.map(g => <button key={g.id} onClick={() => setGender(g.id as any)} className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${gender === g.id ? 'bg-sky-50 dark:bg-sky-900/30 border-sky-600 dark:border-sky-500 text-gray-900 dark:text-white' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'}`}>{g.name}</button>)}
                             </div>
                             <button
                                 onClick={() => {
@@ -602,7 +605,7 @@ const StyleScenePage: React.FC<StyleScenePageProps> = ({ user }) => {
                                     navigate(PATHS.MODEL_GALLERY);
                                 }}
                                 disabled={!gender}
-                                className="w-full py-2.5 bg-white border border-gray-300 text-sm text-gray-700 font-semibold rounded-full shadow-sm hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Browse Models
                             </button>

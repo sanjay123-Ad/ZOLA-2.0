@@ -59,10 +59,10 @@ const FixItModal: React.FC<FixItModalProps> = ({ imageInfo, onClose, onRegenerat
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col" onClick={(e) => e.stopPropagation()}>
-        <header className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-xl font-bold text-gray-800">Fix This Image</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col transition-colors duration-200" onClick={(e) => e.stopPropagation()}>
+        <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Fix This Image</h2>
+          <button onClick={onClose} className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </header>
@@ -70,22 +70,22 @@ const FixItModal: React.FC<FixItModalProps> = ({ imageInfo, onClose, onRegenerat
         <form onSubmit={handleSubmit}>
           <div className="flex-grow flex flex-col md:flex-row p-6 gap-6 overflow-hidden">
             <div className="md:w-1/2 flex-shrink-0">
-              <img src={imageInfo.imageUrl} alt={imageInfo.poseName} className="w-full h-auto object-contain rounded-lg border max-h-[60vh]" />
+              <img src={imageInfo.imageUrl} alt={imageInfo.poseName} className="w-full h-auto object-contain rounded-lg border border-gray-200 dark:border-gray-700 max-h-[60vh]" />
             </div>
             <div className="md:w-1/2 flex flex-col">
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">What needs to be fixed?</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-3 text-lg">What needs to be fixed?</h3>
               <div className="space-y-3">
                 {FIX_REASONS.map(reason => (
-                  <label key={reason.id} className="flex items-center p-3 bg-gray-50 rounded-lg border-2 has-[:checked]:border-[#9F1D35] has-[:checked]:bg-[#9F1D35]/5 cursor-pointer transition-colors">
+                  <label key={reason.id} className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 has-[:checked]:border-[#9F1D35] has-[:checked]:bg-[#9F1D35]/5 dark:has-[:checked]:bg-[#9F1D35]/20 cursor-pointer transition-colors">
                     <input
                       type="radio"
                       name="fix-reason"
                       value={reason.id}
                       checked={selectedReason === reason.id}
                       onChange={(e) => setSelectedReason(e.target.value)}
-                      className="h-4 w-4 text-[#9F1D35] focus:ring-[#9F1D35] border-gray-300"
+                      className="h-4 w-4 text-[#9F1D35] focus:ring-[#9F1D35] border-gray-300 dark:border-gray-600"
                     />
-                    <span className="ml-3 text-sm font-medium text-gray-700">{reason.label}</span>
+                    <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">{reason.label}</span>
                   </label>
                 ))}
               </div>
@@ -94,17 +94,17 @@ const FixItModal: React.FC<FixItModalProps> = ({ imageInfo, onClose, onRegenerat
                   value={otherText}
                   onChange={(e) => setOtherText(e.target.value)}
                   placeholder="Describe the issue... (e.g., 'Make the lighting brighter')"
-                  className="mt-3 w-full h-24 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#9F1D35] focus:border-transparent animate-fade-in"
+                  className="mt-3 w-full h-24 p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-[#9F1D35] focus:border-transparent animate-fade-in"
                   rows={3}
                   disabled={isRegenerating}
                 />
               )}
-               {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+               {error && <p className="text-red-500 dark:text-red-400 text-xs mt-2">{error}</p>}
             </div>
           </div>
           
-          <footer className="flex justify-end p-4 border-t bg-gray-50/50 rounded-b-2xl gap-3">
-            <button type="button" onClick={onClose} disabled={isRegenerating} className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-full shadow-sm hover:bg-gray-100 transition-colors disabled:opacity-50">
+          <footer className="flex justify-end p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 rounded-b-2xl gap-3">
+            <button type="button" onClick={onClose} disabled={isRegenerating} className="px-6 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors disabled:opacity-50">
               Cancel
             </button>
             <button type="submit" disabled={isRegenerating || !selectedReason} className="px-6 py-2.5 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed">

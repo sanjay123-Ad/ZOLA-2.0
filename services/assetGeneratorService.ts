@@ -1,5 +1,6 @@
 import { GoogleGenAI, Modality, Type } from "@google/genai";
 import { ImageFile, ExtractedAsset } from '../types';
+import { logUsage } from './usageTrackingService';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -22,7 +23,8 @@ const handleGeminiError = (error: any, context: string): never => {
 };
 
 export async function classifyGarmentsInImage(
-    sourceImage: ImageFile
+    sourceImage: ImageFile,
+    userId?: string
 ): Promise<{ upperBody: boolean, lowerBody: boolean }> {
     try {
         if (!sourceImage) {
@@ -90,6 +92,11 @@ Respond ONLY with a JSON object containing two boolean properties: "upperBody" a
         }
     } catch (error) {
         handleGeminiError(error, 'garment classification');
+    } finally {
+        if (userId) {
+            const promptLength = 400; // Approximate prompt length
+            await logUsage(userId, 'Classify Garments', 1, promptLength, 0);
+        }
     }
 }
 
@@ -97,7 +104,8 @@ Respond ONLY with a JSON object containing two boolean properties: "upperBody" a
 export async function extractAssetsFromImage(
     sourceImage: ImageFile,
     extractionScope: 'full' | 'upper' | 'lower',
-    gender: 'Male' | 'Female'
+    gender: 'Male' | 'Female',
+    userId?: string
 ): Promise<ExtractedAsset[]> {
     try {
         if (!sourceImage) {
@@ -242,6 +250,14 @@ Failure to adhere to this format will break the processing pipeline.`;
             console.error("Asset extraction failed. No valid asset pairs were generated. Raw response from model:", JSON.stringify(response, null, 2));
             throw new Error("Processing failed. Please try a clearer image.");
         }
+        
+        // Log usage after successful extraction
+        if (userId) {
+            const promptLength = prompt.length;
+            const outputImages = generatedAssets.reduce((sum, asset) => sum + asset.views.length, 0);
+            await logUsage(userId, 'Extract Assets', 1, promptLength, outputImages);
+        }
+        
         return generatedAssets;
     } catch (error) {
         handleGeminiError(error, 'asset extraction');
@@ -251,7 +267,8 @@ Failure to adhere to this format will break the processing pipeline.`;
 export async function composeOutfit(
     upperBodyAsset: ImageFile,
     lowerBodyAsset: ImageFile,
-    gender: 'Male' | 'Female'
+    gender: 'Male' | 'Female',
+    userId?: string
 ): Promise<string> {
     try {
         if (!upperBodyAsset || !lowerBodyAsset) {
@@ -314,7 +331,13 @@ Return ONLY the final, merged image. Do not include any text or watermarks.`;
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful composition
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Compose Outfit', 2, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }

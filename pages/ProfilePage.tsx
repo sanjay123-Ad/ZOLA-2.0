@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { supabase } from '../services/supabase';
@@ -44,11 +44,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+
+  // Session storage key for profile edits
+  const PROFILE_EDIT_STORAGE_KEY = `profile_edit_${user.id}`;
 
   // Load profile data
   useEffect(() => {
     const loadProfile = async () => {
       try {
+        // Check for unsaved edits in sessionStorage
+        const savedEditData = sessionStorage.getItem(PROFILE_EDIT_STORAGE_KEY);
+        
         const { data: profiles, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -60,8 +67,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         }
 
         const profile = profiles?.[0];
+        let loadedData: ProfileData;
+        
         if (profile) {
-          const loadedData = {
+          loadedData = {
             firstName: profile.first_name || '',
             lastName: profile.last_name || '',
             username: profile.username || user.username || '',
@@ -70,11 +79,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
             country: profile.country || '',
             avatarUrl: profile.avatar_url || user.avatar || null,
           };
-          setProfileData(loadedData);
-          setOriginalProfileData(loadedData);
         } else {
           // If no profile exists, initialize with user data
-          const initialData = {
+          loadedData = {
             firstName: '',
             lastName: '',
             username: user.username || '',
@@ -83,8 +90,26 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
             country: '',
             avatarUrl: user.avatar || null,
           };
-          setProfileData(initialData);
-          setOriginalProfileData(initialData);
+        }
+
+        // If there are unsaved edits, prompt user to restore
+        if (savedEditData) {
+          try {
+            const parsedData = JSON.parse(savedEditData);
+            setShowRestorePrompt(true);
+            // Store the loaded data as original for comparison
+            setOriginalProfileData(loadedData);
+            // Don't auto-restore, wait for user decision
+            setProfileData(loadedData);
+          } catch (e) {
+            console.error('Error parsing saved edit data:', e);
+            sessionStorage.removeItem(PROFILE_EDIT_STORAGE_KEY);
+            setProfileData(loadedData);
+            setOriginalProfileData(loadedData);
+          }
+        } else {
+          setProfileData(loadedData);
+          setOriginalProfileData(loadedData);
         }
       } catch (err) {
         console.error('Error loading profile:', err);
@@ -94,12 +119,61 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
     };
 
     loadProfile();
-  }, [user]);
+  }, [user, PROFILE_EDIT_STORAGE_KEY]);
+
+  // Save edit state to sessionStorage
+  const saveEditStateToSession = useCallback((data: ProfileData) => {
+    try {
+      const stateToSave = {
+        profileData: data,
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(PROFILE_EDIT_STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (err) {
+      console.error('Error saving edit state to session:', err);
+    }
+  }, [PROFILE_EDIT_STORAGE_KEY]);
 
   const handleInputChange = (field: keyof ProfileData, value: string | 'Male' | 'Female' | null) => {
-    setProfileData(prev => ({ ...prev, [field]: value }));
+    setProfileData(prev => {
+      const updated = { ...prev, [field]: value };
+      return updated;
+    });
     setError('');
     setSuccess(false);
+  };
+
+  // Save to sessionStorage when profileData changes in edit mode
+  useEffect(() => {
+    if (isEditMode && profileData && originalProfileData) {
+      try {
+        saveEditStateToSession(profileData);
+      } catch (err) {
+        console.error('Error saving to session storage:', err);
+      }
+    }
+  }, [isEditMode, profileData.username, profileData.firstName, profileData.lastName, profileData.gender, profileData.country, profileData.avatarUrl, newAvatarFile, newAvatarPreview, saveEditStateToSession]);
+
+  // Restore unsaved edits
+  const handleRestoreEdits = () => {
+    try {
+      const savedEditData = sessionStorage.getItem(PROFILE_EDIT_STORAGE_KEY);
+      if (savedEditData) {
+        const parsedData = JSON.parse(savedEditData);
+        setProfileData(parsedData.profileData);
+        setIsEditMode(true);
+        setShowRestorePrompt(false);
+      }
+    } catch (err) {
+      console.error('Error restoring edits:', err);
+      setShowRestorePrompt(false);
+    }
+  };
+
+  // Discard unsaved edits
+  const handleDiscardEdits = () => {
+    sessionStorage.removeItem(PROFILE_EDIT_STORAGE_KEY);
+    setShowRestorePrompt(false);
   };
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +210,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
     setNewAvatarFile(croppedFile);
     const reader = new FileReader();
     reader.onloadend = () => {
-      setNewAvatarPreview(reader.result as string);
+      const preview = reader.result as string;
+      setNewAvatarPreview(preview);
+      // Update profile data and save to sessionStorage if in edit mode
+      if (isEditMode) {
+        setProfileData(prev => {
+          const updated = { ...prev, avatarUrl: preview };
+          saveEditStateToSession(updated);
+          return updated;
+        });
+      }
     };
     reader.readAsDataURL(croppedFile);
     setShowCropper(false);
@@ -149,10 +232,48 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   };
 
   const handleDeleteAvatar = () => {
-    // Just update local state, don't save yet
+    // Update local state and save to sessionStorage if in edit mode
     setNewAvatarFile(null);
     setNewAvatarPreview(null);
-    setProfileData(prev => ({ ...prev, avatarUrl: null }));
+    setProfileData(prev => {
+      const updated = { ...prev, avatarUrl: null };
+      if (isEditMode) {
+        saveEditStateToSession(updated);
+      }
+      return updated;
+    });
+  };
+
+  // Removed automatic useEffect saving to prevent infinite loops
+  // Saving is now handled explicitly in handleInputChange, handleCropComplete, and handleDeleteAvatar
+
+  const handleEditClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    // Ensure we have original data before entering edit mode
+    if (!originalProfileData) {
+      // If no original data, set current data as original
+      setOriginalProfileData({ ...profileData });
+    }
+    setIsEditMode(true);
+    setError('');
+    setSuccess(false);
+    // Save initial edit state
+    saveEditStateToSession(profileData);
+  };
+
+  const handleCancelEdit = () => {
+    // Reset to original data
+    if (originalProfileData) {
+      setProfileData({ ...originalProfileData });
+    }
+    setNewAvatarFile(null);
+    setNewAvatarPreview(null);
+    setIsEditMode(false);
+    setError('');
+    setSuccess(false);
+    // Clear session storage
+    sessionStorage.removeItem(PROFILE_EDIT_STORAGE_KEY);
   };
 
   // Check if there are any changes
@@ -166,30 +287,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
     
     // Check if other fields changed
     const fieldsChanged = 
+      profileData.username !== originalProfileData.username ||
       profileData.firstName !== originalProfileData.firstName ||
       profileData.lastName !== originalProfileData.lastName ||
       profileData.gender !== originalProfileData.gender ||
       profileData.country !== originalProfileData.country;
     
     return avatarChanged || fieldsChanged;
-  };
-
-  const handleEditClick = () => {
-    setIsEditMode(true);
-    setError('');
-    setSuccess(false);
-  };
-
-  const handleCancelEdit = () => {
-    // Reset to original data
-    if (originalProfileData) {
-      setProfileData({ ...originalProfileData });
-    }
-    setNewAvatarFile(null);
-    setNewAvatarPreview(null);
-    setIsEditMode(false);
-    setError('');
-    setSuccess(false);
   };
 
   const handleSaveChanges = async (e: React.FormEvent) => {
@@ -255,7 +359,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
           avatar_url: finalAvatarUrl,
         }, { onConflict: 'id' });
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        // Check for duplicate username error
+        if (updateError.code === '23505' || updateError.message.includes('duplicate') || updateError.message.includes('unique')) {
+          throw new Error('This username is already taken. Please choose another username.');
+        }
+        throw updateError;
+      }
 
       // Update state with saved data
       const savedData = {
@@ -268,6 +378,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
       setNewAvatarPreview(null);
       setIsEditMode(false);
       setSuccess(true);
+      // Clear session storage after successful save
+      sessionStorage.removeItem(PROFILE_EDIT_STORAGE_KEY);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       console.error('Error saving profile:', err);
@@ -399,17 +511,17 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-600">Loading profile...</p>
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 dark:border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-white p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 p-4 sm:p-6 lg:p-8 transition-colors duration-200">
       {showCropper && imageToCrop && (
         <ImageCropper
           imageSrc={imageToCrop}
@@ -417,13 +529,47 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
           onCancel={handleCropCancel}
         />
       )}
-      <main className="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-6 sm:p-10 lg:p-12 border border-gray-200/50">
+      <main className="w-full max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 lg:p-12 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
+        {/* Restore Unsaved Changes Prompt */}
+        {showRestorePrompt && (
+          <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-1">Unsaved Changes Detected</h3>
+                <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                  You have unsaved changes from a previous session. Would you like to restore them?
+                </p>
+              </div>
+              <div className="flex gap-2 ml-4">
+                <button
+                  type="button"
+                  onClick={handleRestoreEdits}
+                  className="px-4 py-2 text-xs font-semibold bg-yellow-600 dark:bg-yellow-700 text-white rounded-lg hover:bg-yellow-700 dark:hover:bg-yellow-600 transition-colors"
+                >
+                  Restore
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDiscardEdits}
+                  className="px-4 py-2 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Discard
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Profile</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Profile</h1>
           {!isEditMode && (
             <button
               type="button"
-              onClick={handleEditClick}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleEditClick(e);
+              }}
               className="px-6 py-2.5 bg-sky-600 text-white font-semibold rounded-lg shadow-lg hover:bg-sky-700 transition-colors flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -521,7 +667,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
             <div className="space-y-6">
               {/* First Name */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
                   First Name *
                 </label>
                 <input
@@ -532,7 +678,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
                   className={`w-full px-4 py-3 border-2 rounded-lg transition-colors ${
                     isEditMode 
                       ? 'border-gray-200 focus:outline-none focus:border-sky-500 bg-gray-50' 
-                      : 'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   required
                 />
@@ -540,20 +686,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
               {/* Email - Non-editable */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   value={profileData.email}
                   disabled
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 />
               </div>
 
               {/* Gender */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
                   Gender
                 </label>
                 <div className="grid grid-cols-2 gap-4">
@@ -563,16 +709,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
                     disabled={!isEditMode}
                     className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${
                       !isEditMode 
-                        ? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60'
+                        ? 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 cursor-not-allowed opacity-60'
                         : profileData.gender === 'Male'
-                        ? 'border-sky-600 bg-sky-50'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-sky-600 dark:border-sky-500 bg-sky-50 dark:bg-sky-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-700'
                     }`}
                   >
-                    <div className="w-8 h-8 mb-2 text-sky-600">
+                    <div className={`w-8 h-8 mb-2 ${profileData.gender === 'Male' ? 'text-sky-600 dark:text-sky-400' : 'text-sky-600 dark:text-sky-400'}`}>
                       <MaleIcon />
                     </div>
-                    <span className="font-semibold text-gray-800">Male</span>
+                    <span className={`font-semibold ${profileData.gender === 'Male' ? 'text-gray-800 dark:text-white' : 'text-gray-800 dark:text-gray-300'}`}>Male</span>
                   </button>
                   <button
                     type="button"
@@ -580,23 +726,23 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
                     disabled={!isEditMode}
                     className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${
                       !isEditMode 
-                        ? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60'
+                        ? 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 cursor-not-allowed opacity-60'
                         : profileData.gender === 'Female'
-                        ? 'border-sky-600 bg-sky-50'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-sky-600 dark:border-sky-500 bg-sky-50 dark:bg-sky-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-700'
                     }`}
                   >
-                    <div className="w-8 h-8 mb-2 text-sky-600">
+                    <div className={`w-8 h-8 mb-2 ${profileData.gender === 'Female' ? 'text-sky-600 dark:text-sky-400' : 'text-sky-600 dark:text-sky-400'}`}>
                       <FemaleIcon />
                     </div>
-                    <span className="font-semibold text-gray-800">Female</span>
+                    <span className={`font-semibold ${profileData.gender === 'Female' ? 'text-gray-800 dark:text-white' : 'text-gray-800 dark:text-gray-300'}`}>Female</span>
                   </button>
                 </div>
               </div>
 
               {/* Country */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
                   Country
                 </label>
                 <input
@@ -607,7 +753,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
                   className={`w-full px-4 py-3 border-2 rounded-lg transition-colors ${
                     isEditMode 
                       ? 'border-gray-200 focus:outline-none focus:border-sky-500 bg-gray-50' 
-                      : 'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   placeholder="Enter your country"
                 />
@@ -618,7 +764,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
             <div className="space-y-6">
               {/* Last Name */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
                   Last Name *
                 </label>
                 <input
@@ -629,36 +775,52 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
                   className={`w-full px-4 py-3 border-2 rounded-lg transition-colors ${
                     isEditMode 
                       ? 'border-gray-200 focus:outline-none focus:border-sky-500 bg-gray-50' 
-                      : 'border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   required
                 />
               </div>
 
-              {/* Username - Non-editable */}
+              {/* Username - Editable */}
               <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Username
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">
+                  Username *
                 </label>
                 <input
                   type="text"
                   value={profileData.username}
-                  disabled
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  disabled={!isEditMode}
+                  className={`w-full px-4 py-3 border-2 rounded-lg transition-colors ${
+                    isEditMode 
+                      ? 'border-gray-200 dark:border-gray-600 focus:outline-none focus:border-sky-500 dark:focus:border-sky-400 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white' 
+                      : 'border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                  }`}
+                  placeholder="Enter your username"
+                  required
+                  minLength={3}
+                  maxLength={30}
+                  pattern="[a-zA-Z0-9_]+"
+                  title="Username must be 3-30 characters and contain only letters, numbers, and underscores"
                 />
+                {isEditMode && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    3-30 characters, letters, numbers, and underscores only
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
           {/* Error and Success Messages */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-sm">{error}</p>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
             </div>
           )}
           {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-600 text-sm">Changes saved successfully!</p>
+            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <p className="text-green-600 dark:text-green-400 text-sm">Changes saved successfully!</p>
             </div>
           )}
 
@@ -688,7 +850,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Delete account</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete account</h2>
               <p className="text-gray-600 text-sm leading-relaxed">
                 No longer want to use our service? Delete your account here. This action is not reversible. All information related to this account will be deleted permanently. If you have an active subscription, please cancel it before deleting your account.
               </p>

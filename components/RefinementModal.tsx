@@ -11,6 +11,7 @@ interface RefinementModalProps {
   onClose: () => void;
   gender: 'Male' | 'Female';
   garmentDescription: string;
+  userId?: string;
 }
 
 const RefinementModal: React.FC<RefinementModalProps> = ({
@@ -20,7 +21,8 @@ const RefinementModal: React.FC<RefinementModalProps> = ({
   onApply,
   onClose,
   gender,
-  garmentDescription
+  garmentDescription,
+  userId
 }) => {
   const [previewImage, setPreviewImage] = useState(initialGeneratedImage);
   const [saturation, setSaturation] = useState(100);
@@ -82,7 +84,8 @@ const RefinementModal: React.FC<RefinementModalProps> = ({
                 userImage,
                 garmentImage,
                 generatedImageFile,
-                garmentDescription
+                garmentDescription,
+                userId
             );
             if (!isCancelled) {
                 setDiagnosticResult(result);
@@ -151,7 +154,7 @@ const RefinementModal: React.FC<RefinementModalProps> = ({
       if(!userImage || !garmentImage) {
         throw new Error("User or garment image is missing.");
       }
-      const resultBase64 = await refineGeneratedImage(currentImageFile, refinementPrompt, gender, garmentDescription);
+      const resultBase64 = await refineGeneratedImage(currentImageFile, refinementPrompt, gender, garmentDescription, userId);
       const newImageUrl = `data:image/png;base64,${resultBase64}`;
       setPreviewImage(newImageUrl);
       setRefinementPrompt('');
@@ -222,31 +225,31 @@ const RefinementModal: React.FC<RefinementModalProps> = ({
                     </button>
                 </div>
               ) : (
-                <p className="text-sm text-gray-600 mb-4">Describe the change you want to see. For example, "make the shirt sleeves longer" or "change the background to a sunny beach".</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Describe the change you want to see. For example, "make the shirt sleeves longer" or "change the background to a sunny beach".</p>
               )}
 
               <textarea
                 value={refinementPrompt}
                 onChange={(e) => setRefinementPrompt(e.target.value)}
                 placeholder={placeholderText}
-                className="w-full h-24 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#9F1D35] focus:border-transparent"
+                className="w-full h-24 p-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-2 focus:ring-[#9F1D35] dark:focus:ring-[#9F1D35] focus:border-transparent"
                 rows={3}
                 disabled={isRefining}
               />
               <button
                 onClick={handleRefineWithPrompt}
                 disabled={isRefining || !refinementPrompt.trim()}
-                className="w-full mt-3 px-4 py-2.5 bg-[#2E1E1E] text-white font-semibold rounded-lg shadow-md hover:bg-black transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full mt-3 px-4 py-2.5 bg-[#2E1E1E] dark:bg-gray-700 text-white dark:text-gray-200 font-semibold rounded-lg shadow-md hover:bg-black dark:hover:bg-gray-600 transition-colors disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isRefining ? <Spinner/> : 'Refine with AI'}
               </button>
-              {refinementError && <p className="text-red-500 text-xs mt-2">{refinementError}</p>}
+              {refinementError && <p className="text-red-500 dark:text-red-400 text-xs mt-2">{refinementError}</p>}
             </div>
 
-            <hr className="border-gray-200" />
+            <hr className="border-gray-200 dark:border-gray-700" />
             
             <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">Color & Light</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-white mb-3 text-lg">Color & Light</h3>
               <div className="space-y-4">
                 <Slider label="Brightness" value={brightness} onChange={(e) => setBrightness(Number(e.target.value))} />
                 <Slider label="Contrast" value={contrast} onChange={(e) => setContrast(Number(e.target.value))} />
@@ -258,12 +261,12 @@ const RefinementModal: React.FC<RefinementModalProps> = ({
           {/* Image Preview Panel */}
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-y-auto p-2">
             <div className="flex flex-col items-center">
-              <p className="mb-2 text-sm font-semibold text-gray-600">Source Person</p>
-              <img src={userImage?.dataUrl} alt="Original" className="w-full h-auto object-contain rounded-lg max-h-[70vh] border"/>
+              <p className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">Source Person</p>
+              <img src={userImage?.dataUrl} alt="Original" className="w-full h-auto object-contain rounded-lg max-h-[70vh] border border-gray-200 dark:border-gray-700"/>
             </div>
             <div className="flex flex-col items-center">
-              <p className="mb-2 text-sm font-semibold text-gray-600">Source Garment</p>
-              <img src={garmentImage?.dataUrl} alt="Garment" className="w-full h-auto object-contain rounded-lg max-h-[70vh] border"/>
+              <p className="mb-2 text-sm font-semibold text-gray-600 dark:text-gray-400">Source Garment</p>
+              <img src={garmentImage?.dataUrl} alt="Garment" className="w-full h-auto object-contain rounded-lg max-h-[70vh] border border-gray-200 dark:border-gray-700"/>
             </div>
             <div className="flex flex-col items-center relative">
               <p className="mb-2 text-sm font-semibold text-[#9F1D35]">Editable Result</p>

@@ -15,4 +15,5 @@ export const PATHS = {
   ABOUT: '/about',
   MODEL_GALLERY: '/model_gallery',
   BACKGROUND_GALLERY: '/background_gallery',
+  USAGE_ANALYTICS: '/usage_analytics',
 };

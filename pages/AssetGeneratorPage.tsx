@@ -330,7 +330,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
 
       setIsValidatingGender(true);
       try {
-        const detectedGender = await detectGender(sourceImage);
+        const detectedGender = await detectGender(sourceImage, user.id);
         if (detectedGender !== 'Unknown' && detectedGender !== gender) {
           setGenderWarning(`Warning: Your selected gender is '${gender}', but the photo appears to be of a '${detectedGender}' person. Please correct the selection or upload a different image.`);
         } else {
@@ -362,7 +362,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
     setView('loading');
     setError(null);
     try {
-      const assets = await extractAssetsFromImage(sourceImage, extractionScope, gender);
+      const assets = await extractAssetsFromImage(sourceImage, extractionScope, gender, user.id);
       setGeneratedAssets(assets);
       setView('results');
     } catch (err) {
@@ -383,7 +383,7 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
     try {
         const upperFile = dataUrlToImageFile(`data:image/png;base64,${upperAsset.views[0].imageBase64}`);
         const lowerFile = dataUrlToImageFile(`data:image/png;base64,${lowerAsset.views[0].imageBase64}`);
-        const resultBase64 = await composeOutfit(upperFile, lowerFile, gender);
+        const resultBase64 = await composeOutfit(upperFile, lowerFile, gender, user.id);
         setComposedOutfitImage(`data:image/png;base64,${resultBase64}`);
     } catch (err) {
         setError((err as Error).message);
@@ -414,39 +414,39 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
   const isGenerateDisabled = !gender || !sourceImage || !!genderWarning;
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
-      <main className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
+      <main className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">E-commerce Asset Generator</h1>
-          <p className="text-gray-600 mt-2 text-lg">Turn lifestyle shots into ghost mannequin assets.</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] dark:text-white font-headline">E-commerce Asset Generator</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Turn lifestyle shots into ghost mannequin assets.</p>
         </div>
 
         {view === 'setup' && (
           <div className="max-w-4xl mx-auto animate-fade-in">
-             <div className="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-r-lg mb-8">
-                <h3 className="font-bold text-sky-600">Instructions for a Perfect Extraction:</h3>
-                <p className="text-[#2E1E1E]/80 text-sm mt-1">
+             <div className="bg-sky-50 dark:bg-sky-900/20 border-l-4 border-sky-300 dark:border-sky-500 p-4 rounded-r-lg mb-8">
+                <h3 className="font-bold text-sky-600 dark:text-sky-400">Instructions for a Perfect Extraction:</h3>
+                <p className="text-[#2E1E1E]/80 dark:text-gray-300 text-sm mt-1">
                     Provide a lifestyle photo where the garment is clearly visible on a person. The AI will isolate it for you.
                 </p>
             </div>
             {/* Step 1: Gender */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 mb-4"><span className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
               <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => handleSetGender('Male')} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-sky-600"><MaleIcon/></span>
-                  <span className="font-semibold text-gray-800">Male</span>
+                <button onClick={() => handleSetGender('Male')} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 dark:border-sky-500 bg-sky-50 dark:bg-sky-900/30' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600 dark:text-sky-400"><MaleIcon/></span>
+                  <span className="font-semibold text-gray-800 dark:text-white">Male</span>
                 </button>
-                <button onClick={() => handleSetGender('Female')} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-sky-600"><FemaleIcon/></span>
-                  <span className="font-semibold text-gray-800">Female</span>
+                <button onClick={() => handleSetGender('Female')} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 dark:border-sky-500 bg-sky-50 dark:bg-sky-900/30' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600 dark:text-sky-400"><FemaleIcon/></span>
+                  <span className="font-semibold text-gray-800 dark:text-white">Female</span>
                 </button>
               </div>
             </div>
             {/* Step 2: Image - Only show after gender is selected */}
             {gender && (
-              <div className="mt-8 pt-6 border-t animate-fade-in">
-                <h3 className="text-lg font-bold text-gray-800 mb-4"><span className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">2</span>Upload Lifestyle Photo</h3>
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 animate-fade-in">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">2</span>Upload Lifestyle Photo</h3>
                 <div className="max-w-md mx-auto">
                   <ImageUploader id="source-image" title="Upload Photo" onImageUpload={handleImageUpload} icon={<GarmentIcon/>} currentFile={sourceImage} />
                   {isValidatingGender && (
@@ -454,12 +454,12 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
                       <div className="flex justify-center">
                         <Spinner />
                       </div>
-                      <p className="text-sm text-gray-500 mt-3">Analyzing image with AI...</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Analyzing image with AI...</p>
                     </div>
                   )}
                   {!isValidatingGender && genderWarning && (
-                    <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-                      <p className="text-sm text-yellow-800 font-medium">{genderWarning}</p>
+                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 dark:border-yellow-500 rounded-r-lg">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-300 font-medium">{genderWarning}</p>
                     </div>
                   )}
                 </div>
@@ -467,29 +467,29 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
             )}
             {/* Step 3: Scope - Only show after image is uploaded and validation is complete */}
             {gender && sourceImage && !isValidatingGender && gender === 'Male' && (
-                <div className="mt-8 pt-6 border-t animate-fade-in">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4"><span className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">3</span>Definition Extraction Scope</h3>
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 animate-fade-in">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">3</span>Definition Extraction Scope</h3>
                     <div className="flex flex-col md:flex-row md:space-x-6 space-y-3 md:space-y-0">
-                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                          <input type="radio" name="scope" value="upper" checked={extractionScope === 'upper'} onChange={() => setExtractionScope('upper')} className="h-5 w-5 rounded-full border-gray-300 text-sky-600 focus:ring-sky-600" />
-                          <span className="font-medium text-gray-700">Upper Body Only</span>
+                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <input type="radio" name="scope" value="upper" checked={extractionScope === 'upper'} onChange={() => setExtractionScope('upper')} className="h-5 w-5 rounded-full border-gray-300 dark:border-gray-600 text-sky-600 dark:text-sky-400 focus:ring-sky-600 dark:focus:ring-sky-500" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Upper Body Only</span>
                       </label>
-                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                          <input type="radio" name="scope" value="lower" checked={extractionScope === 'lower'} onChange={() => setExtractionScope('lower')} className="h-5 w-5 rounded-full border-gray-300 text-sky-600 focus:ring-sky-600" />
-                          <span className="font-medium text-gray-700">Lower Body Only</span>
+                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <input type="radio" name="scope" value="lower" checked={extractionScope === 'lower'} onChange={() => setExtractionScope('lower')} className="h-5 w-5 rounded-full border-gray-300 dark:border-gray-600 text-sky-600 dark:text-sky-400 focus:ring-sky-600 dark:focus:ring-sky-500" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Lower Body Only</span>
                       </label>
-                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                          <input type="radio" name="scope" value="full" checked={extractionScope === 'full'} onChange={() => setExtractionScope('full')} className="h-5 w-5 rounded-full border-gray-300 text-sky-600 focus:ring-sky-600" />
-                          <span className="font-medium text-gray-700">Both (Upper &amp; Lower)</span>
+                      <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <input type="radio" name="scope" value="full" checked={extractionScope === 'full'} onChange={() => setExtractionScope('full')} className="h-5 w-5 rounded-full border-gray-300 dark:border-gray-600 text-sky-600 dark:text-sky-400 focus:ring-sky-600 dark:focus:ring-sky-500" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Both (Upper &amp; Lower)</span>
                       </label>
                     </div>
                 </div>
             )}
             {gender && sourceImage && !isValidatingGender && gender === 'Female' && (
-                <div className="mt-8 pt-6 border-t animate-fade-in">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4"><span className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">3</span>Definition Extraction Scope</h3>
-                    <div className="p-4 bg-gray-100 rounded-lg">
-                        <p className="font-medium text-gray-700">A full outfit will be generated for female garments.</p>
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 animate-fade-in">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">3</span>Definition Extraction Scope</h3>
+                    <div className="p-4 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+                        <p className="font-medium text-gray-700 dark:text-gray-300">A full outfit will be generated for female garments.</p>
                     </div>
                 </div>
             )}
@@ -500,9 +500,9 @@ const AssetGeneratorPage: React.FC<AssetGeneratorPageProps> = ({ user, onSaveToC
                     Generate Assets
                 </button>
                 {isGenerateDisabled && genderWarning && (
-                  <p className="mt-4 text-sm text-yellow-600 font-medium">Please resolve the gender mismatch before generating assets.</p>
+                  <p className="mt-4 text-sm text-yellow-600 dark:text-yellow-400 font-medium">Please resolve the gender mismatch before generating assets.</p>
                 )}
-                {error && <p className="mt-4 text-red-600">{error}</p>}
+                {error && <p className="mt-4 text-red-600 dark:text-red-400">{error}</p>}
               </div>
             )}
           </div>

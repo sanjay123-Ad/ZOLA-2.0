@@ -1,6 +1,7 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { ImageFile } from '../types';
 import { MANNEQUIN_MODELS } from './mannequins';
+import { logUsage } from './usageTrackingService';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -44,7 +45,8 @@ const urlToImageFile = async (url: string): Promise<ImageFile> => {
 };
 
 export async function generateForgedAsset(
-    garmentImage: ImageFile
+    garmentImage: ImageFile,
+    userId?: string
 ): Promise<string> {
     try {
         if (!garmentImage) {
@@ -108,7 +110,13 @@ Return ONLY the final, forged image. Do not include any text, logos, or watermar
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful generation
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Catalog Forged', 1, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }
@@ -119,7 +127,8 @@ Return ONLY the final, forged image. Do not include any text, logos, or watermar
 }
 
 export async function generateMannequinModel(
-    perfectedGarmentImage: ImageFile
+    perfectedGarmentImage: ImageFile,
+    userId?: string
 ): Promise<string> {
     try {
         if (!perfectedGarmentImage) {
@@ -169,7 +178,13 @@ Return ONLY the final, edited image. Do not include any text, logos, or watermar
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful generation
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Catalog Forged', 1, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }
@@ -183,7 +198,8 @@ export async function generatePerfectedMannequin(
     garmentImage: ImageFile,
     view: 'front' | 'back',
     gender: 'Male' | 'Female',
-    garmentType: 'upper' | 'lower' | 'full'
+    garmentType: 'upper' | 'lower' | 'full',
+    userId?: string
 ): Promise<string> {
     try {
         if (!garmentImage) throw new Error('Garment image must be provided.');
@@ -262,7 +278,13 @@ To perform a flawless, hyper-realistic virtual try-on, dressing the provided man
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful generation
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Catalog Forged', 2, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }

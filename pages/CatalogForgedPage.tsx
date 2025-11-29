@@ -221,8 +221,8 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                 if (!garment.front || !garment.back) throw new Error("Both front and back images are required.");
 
                 const [frontB64, backB64] = await Promise.all([
-                    generatePerfectedMannequin(garment.front, 'front', gender, garmentType),
-                    generatePerfectedMannequin(garment.back, 'back', gender, garmentType)
+                    generatePerfectedMannequin(garment.front, 'front', gender, garmentType, user.id),
+                    generatePerfectedMannequin(garment.back, 'back', gender, garmentType, user.id)
                 ]);
 
                 const [frontPath, backPath] = await Promise.all([
@@ -319,13 +319,13 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                   <button onClick={() => !isSaved && handleSave(garment, view)} disabled={isSaved} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 text-sm text-sky-600 border border-sky-600 font-semibold rounded-full shadow-sm hover:bg-sky-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed">
                     <SaveIcon /> {isSaved ? '✓ Saved' : 'Save'}
                   </button>
-                  <button onClick={() => handleDownload(result.dataUrl, filename)} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+                  <button onClick={() => handleDownload(result.dataUrl, filename)} className="w-full flex items-center justify-center px-3 py-2 bg-white/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
                     <DownloadIcon /> Download
                   </button>
                 </div>
               </div>
             </div>
-            <p className="text-xs font-semibold text-gray-600 text-center mt-2 capitalize">{view} Mannequin</p>
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 text-center mt-2 capitalize">{view} Mannequin</p>
           </div>
         );
     };
@@ -334,38 +334,38 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-sky-50 via-white to-white">
                 <Spinner />
-                <p className="mt-4 text-gray-600">Loading your session...</p>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your session...</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
-            <main className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
+        <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
+            <main className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Catalog | Forged (Batch Mode)</h1>
-                    <p className="text-gray-600 mt-2 text-lg">Generate perfected on-mannequin product shots.</p>
+                    <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] dark:text-white font-headline">Catalog | Forged (Batch Mode)</h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Generate perfected on-mannequin product shots.</p>
                 </div>
 
                 {view === 'setup' && (
                     <form onSubmit={handleProceedToUploads} className="max-w-lg mx-auto animate-fade-in text-left">
                         <div className="mb-8">
-                            <label className="block text-lg font-bold text-gray-800 mb-4">Step 1: Select Gender</label>
+                            <label className="block text-lg font-bold text-gray-800 dark:text-white mb-4">Step 1: Select Gender</label>
                              <div className="grid grid-cols-2 gap-4">
                                 <button type="button" onClick={() => { setGender('Male'); setGarmentType(null); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
                                     <span className="w-10 h-10 mb-2 text-sky-600"><MaleIcon/></span>
-                                    <span className="font-semibold text-gray-800">Male</span>
+                                    <span className="font-semibold text-gray-800 dark:text-white">Male</span>
                                 </button>
                                 <button type="button" onClick={() => { setGender('Female'); setGarmentType('full'); }} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>
                                     <span className="w-10 h-10 mb-2 text-sky-600"><FemaleIcon/></span>
-                                    <span className="font-semibold text-gray-800">Female</span>
+                                    <span className="font-semibold text-gray-800 dark:text-white">Female</span>
                                 </button>
                             </div>
                         </div>
 
                         {gender === 'Male' && (
                             <div className="mb-8 animate-fade-in">
-                                <label className="block text-lg font-bold text-gray-800 mb-4">Step 2: Select Garment Type</label>
+                                <label className="block text-lg font-bold text-gray-800 dark:text-white mb-4">Step 2: Select Garment Type</label>
                                 <div className="grid grid-cols-2 gap-4">
                                     <button type="button" onClick={() => setGarmentType('upper')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'upper' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>Upper Body</button>
                                     <button type="button" onClick={() => setGarmentType('lower')} className={`py-4 border-2 rounded-xl font-semibold transition-colors ${garmentType === 'lower' ? 'border-sky-600 bg-sky-50' : 'border-gray-300 hover:border-gray-400'}`}>Lower Body</button>
@@ -374,10 +374,10 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                         )}
                         
                         <div className="mb-8">
-                           <label className="block text-lg font-bold text-gray-800">
+                           <label className="block text-lg font-bold text-gray-800 dark:text-white">
                                 {gender === 'Female' ? 'Step 2' : 'Step 3'}: Proceed to Uploads
                             </label>
-                            <p className="text-sm text-gray-500 mt-2">You will upload front and back photos for each garment. You can add or remove garments on the next screen (up to {BATCH_LIMIT} total).</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">You will upload front and back photos for each garment. You can add or remove garments on the next screen (up to {BATCH_LIMIT} total).</p>
                         </div>
                         
                         <div className="text-center">
@@ -388,9 +388,9 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
 
                 {view === 'upload' && (
                     <div className="animate-fade-in">
-                        <div className="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-r-lg mb-8">
-                            <h3 className="font-bold text-sky-600">Input Pre-requisites for Best Results:</h3>
-                            <ul className="list-disc list-inside text-[#2E1E1E]/80 text-sm mt-2 space-y-1">
+                        <div className="bg-sky-50 dark:bg-sky-900/20 border-l-4 border-sky-300 dark:border-sky-500 p-4 rounded-r-lg mb-8">
+                            <h3 className="font-bold text-sky-600 dark:text-sky-400">Input Pre-requisites for Best Results:</h3>
+                            <ul className="list-disc list-inside text-[#2E1E1E]/80 dark:text-gray-300 text-sm mt-2 space-y-1">
                                 <li><b>Clear Photos:</b> For best results, use flat-lay or on-hanger product photos with a clean background.</li>
                                 <li><b>Provide Both Views:</b> Ensure you upload a front and back image for each garment to get a complete set.</li>
                             </ul>
@@ -399,7 +399,7 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                             {garments.map((g, index) => (
                                 <div key={g.id} className="p-6 bg-gray-50 rounded-2xl border relative">
                                     <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-xl font-bold text-gray-800">Garment {index + 1}</h3>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-white">Garment {index + 1}</h3>
                                         <button
                                             onClick={() => handleRemoveGarment(g.id)}
                                             disabled={garments.length <= 1}
@@ -420,7 +420,7 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                             <button
                                 onClick={handleAddGarment}
                                 disabled={garments.length >= BATCH_LIMIT}
-                                className="w-full sm:w-auto px-6 py-3 bg-white text-gray-700 border border-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                className="w-full sm:w-auto px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 font-semibold rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
                             >
                                 + Add Another Garment
                             </button>
@@ -437,14 +437,14 @@ const CatalogForgedPage: React.FC<CatalogForgedPageProps> = ({ user, onSaveToCol
                             <button onClick={handleDownloadAll} disabled={isProcessing || successfulGarments.length === 0} className="flex items-center justify-center px-6 py-3 bg-[#2E1E1E] text-white font-semibold rounded-full shadow-md hover:bg-black transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                                 <DownloadIcon /> Download All ({successfulGarments.length})
                             </button>
-                            <button onClick={handleStartOver} disabled={isProcessing} className="px-6 py-3 bg-white text-gray-700 border border-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50">Start Over</button>
+                            <button onClick={handleStartOver} disabled={isProcessing} className="px-6 py-3 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 font-semibold rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors disabled:opacity-50">Start Over</button>
                         </div>
                         {error && <p className="mb-4 text-center text-red-600 bg-red-50 p-3 rounded-lg border border-red-300">{error}</p>}
                         <div className="space-y-8">
                             {garments.map(g => (
                                 <div key={g.id} className="p-6 rounded-2xl border transition-all" style={{ background: g.status === 'success' ? '#F0FFF4' : g.status === 'error' ? '#FFF5F5' : '#F7FAFC' }}>
                                     <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-xl font-bold text-gray-800 capitalize">{g.id.replace('_', ' ')}</h3>
+                                        <h3 className="text-xl font-bold text-gray-800 dark:text-white capitalize">{g.id.replace('_', ' ')}</h3>
                                         <div className={`px-3 py-1 text-sm font-bold rounded-full flex items-center gap-2 ${ g.status === 'success' ? 'bg-green-100 text-green-800' : g.status === 'processing' ? 'bg-blue-100 text-blue-800' : g.status === 'error' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' }`}>
                                             {g.status === 'processing' && <Spinner/>} {g.status}
                                         </div>

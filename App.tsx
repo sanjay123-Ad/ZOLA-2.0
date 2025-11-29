@@ -15,6 +15,8 @@ import BackgroundGalleryPage from './pages/BackgroundGalleryPage';
 import AssetCollectionPage from './pages/AssetCollectionPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import UsageAnalyticsPage from './pages/UsageAnalyticsPage';
+import SettingsPage from './pages/SettingsPage';
 import { User, GeneratedAsset, CollectionAsset } from './types';
 import Layout from './components/Layout';
 import OnboardingTour from './components/OnboardingTour';
@@ -218,6 +220,46 @@ const App: React.FC = () => {
   };
 
 
+  // Function to apply theme
+  const applyTheme = (theme: 'light' | 'dark' | 'system') => {
+    const root = document.documentElement;
+    
+    if (theme === 'system') {
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (systemPrefersDark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    } else if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  };
+
+  // Load theme preference
+  const loadTheme = async (userId: string) => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('theme_preference')
+        .eq('id', userId)
+        .limit(1);
+
+      if (error) {
+        console.warn('Error loading theme:', error);
+        return;
+      }
+
+      const profile = profiles?.[0];
+      const theme = (profile?.theme_preference as 'light' | 'dark' | 'system') || 'system';
+      applyTheme(theme);
+    } catch (err) {
+      console.error('Error loading theme:', err);
+    }
+  };
+
   // Effect 1: Handle Auth State Changes. This is now more robust.
   useEffect(() => {
     // This function processes a session and updates user state. It's used for both initial load and subsequent changes.
@@ -229,7 +271,7 @@ const App: React.FC = () => {
             // without crashing the authentication flow.
             const { data: profiles, error: profileError } = await supabase
               .from('profiles')
-              .select('username, avatar_url')
+              .select('username, avatar_url, theme_preference')
               .eq('id', session.user.id)
               .limit(1);
 
@@ -245,8 +287,14 @@ const App: React.FC = () => {
                 avatar: profile?.avatar_url
             };
             setCurrentUser(user);
+            
+            // Load and apply theme preference
+            const theme = (profile?.theme_preference as 'light' | 'dark' | 'system') || 'system';
+            applyTheme(theme);
         } else {
             setCurrentUser(null);
+            // Reset to system theme on logout
+            applyTheme('system');
         }
     };
 
@@ -394,8 +442,7 @@ const App: React.FC = () => {
                   element={
                       <Layout 
                           user={currentUser} 
-                          onLogout={handleLogout} 
-                          onHelpClick={() => setIsTourActive(true)}
+                          onLogout={handleLogout}
                       />
                   }
               >
@@ -429,8 +476,9 @@ const App: React.FC = () => {
                   } />
                   <Route path={PATHS.PRICING} element={<AboutPage />} />
                   <Route path={PATHS.PROFILE} element={<ProfilePage user={currentUser} />} />
-                  <Route path={PATHS.SETTINGS} element={<AboutPage />} />
+                  <Route path={PATHS.SETTINGS} element={<SettingsPage user={currentUser} />} />
                   <Route path={PATHS.ABOUT} element={<AboutPage />} />
+                  <Route path={PATHS.USAGE_ANALYTICS} element={<UsageAnalyticsPage user={currentUser} />} />
                   {/* Catch-all for logged-in users shows a 404 within the app layout */}
                   <Route path="*" element={<NotFoundPage />} />
               </Route>

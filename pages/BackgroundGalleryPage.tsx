@@ -216,11 +216,11 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
 
   if (!sourceImageUrl) {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 transition-colors duration-200">
             {error ? (
-                <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
-                    <h2 className="text-2xl font-bold text-[#2E1E1E] mb-4">Background Editor Unavailable</h2>
-                    <p className="text-gray-600 mb-6">{error}</p>
+                <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 text-center transition-colors duration-200">
+                    <h2 className="text-2xl font-bold text-[#2E1E1E] dark:text-white mb-4">Background Editor Unavailable</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
                     <button 
                         onClick={onBack} 
                         className="px-6 py-2.5 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors"
@@ -231,7 +231,7 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
             ) : (
                 <>
             <Spinner />
-            <p className="mt-4 text-gray-600">Loading editor...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading editor...</p>
                 </>
             )}
         </div>
@@ -239,12 +239,12 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-[#2E1E1E]">
-      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md shadow-sm p-4">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-[#2E1E1E] dark:text-white transition-colors duration-200">
+      <header className="sticky top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm p-4 transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold font-headline">Background Editor</h1>
-            <p className="text-gray-600 text-sm">Select a new background for your image</p>
+            <h1 className="text-2xl font-bold font-headline text-[#2E1E1E] dark:text-white">Background Editor</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Select a new background for your image</p>
           </div>
           <button onClick={handleBack} className="px-6 py-2.5 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors">
             &larr; Back to Campaign
@@ -256,8 +256,8 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
         {/* Left Panel: Source Image */}
         <div className="lg:w-1/3 flex-shrink-0">
           <div className="sticky top-24">
-            <h2 className="font-bold text-lg text-center mb-4 text-gray-700">Image to Edit</h2>
-            <div className="aspect-[4/5] bg-white rounded-2xl shadow-lg overflow-hidden border">
+            <h2 className="font-bold text-lg text-center mb-4 text-gray-700 dark:text-gray-300">Image to Edit</h2>
+            <div className="aspect-[4/5] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                 <img src={sourceImageUrl} alt="Source for background change" className="w-full h-full object-contain" />
             </div>
           </div>
@@ -266,7 +266,7 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
         {/* Right Panel: Backgrounds & Result */}
         <div className="flex-1 min-w-0">
           <section>
-            <h2 className="font-bold text-lg text-gray-700 mb-4">Choose a Background</h2>
+            <h2 className="font-bold text-lg text-gray-700 dark:text-gray-300 mb-4">Choose a Background</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 custom-scrollbar pr-2" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
               {BACKGROUNDS.map(bg => (
                 <div key={bg.id} className="group">
@@ -282,24 +282,24 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
                             </button>
                         </div>
                     </div>
-                     <p className="mt-2 text-xs text-gray-600 font-semibold text-center truncate" title={bg.name}>{bg.name}</p>
+                     <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 font-semibold text-center truncate" title={bg.name}>{bg.name}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {(generatedImage || applyingBackgroundId || error) && (
-            <section className="mt-8 pt-8 border-t">
-              <h2 className="font-bold text-lg text-gray-700 mb-4 text-center">Generated Image</h2>
+            <section className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="font-bold text-lg text-gray-700 dark:text-gray-300 mb-4 text-center">Generated Image</h2>
               <div className="flex flex-col items-center">
-                  {error && <div className="p-4 w-full max-w-lg bg-red-100 border border-red-400 text-red-700 rounded-lg text-center mb-4"><p>{error}</p></div>}
-                  {applyingBackgroundId && !generatedImage && <div className="w-full max-w-lg h-96 flex flex-col items-center justify-center bg-gray-100 rounded-xl border-dashed border-2"><Spinner /><p className="mt-3 text-gray-500">Applying background...</p></div>}
+                  {error && <div className="p-4 w-full max-w-lg bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-500 text-red-700 dark:text-red-400 rounded-lg text-center mb-4"><p>{error}</p></div>}
+                  {applyingBackgroundId && !generatedImage && <div className="w-full max-w-lg h-96 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl border-dashed border-2 border-gray-300 dark:border-gray-600"><Spinner /><p className="mt-3 text-gray-500 dark:text-gray-400">Applying background...</p></div>}
                   {generatedImage && (
                     <div className="w-full max-w-lg animate-fade-in">
-                        <div className="aspect-[4/5] bg-white rounded-2xl shadow-lg overflow-hidden border">
+                        <div className="aspect-[4/5] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                             <img src={generatedImage.imageUrl} alt="Generated with new background" className="w-full h-full object-contain"/>
                         </div>
-                        <button onClick={handleAddToCollection} className="w-full mt-4 flex items-center justify-center px-6 py-3 bg-[#2E1E1E] text-white font-semibold rounded-full shadow-md hover:bg-black transition-colors">
+                        <button onClick={handleAddToCollection} className="w-full mt-4 flex items-center justify-center px-6 py-3 bg-[#2E1E1E] dark:bg-gray-700 text-white dark:text-gray-200 font-semibold rounded-full shadow-md hover:bg-black dark:hover:bg-gray-600 transition-colors">
                             Add to Collection
                         </button>
                     </div>
@@ -309,16 +309,16 @@ const BackgroundGalleryPage: React.FC<BackgroundGalleryPageProps> = ({ onBack })
           )}
 
           {collection.length > 0 && (
-            <section className="mt-8 pt-8 border-t">
-              <h2 className="font-bold text-lg text-gray-700 mb-4">Generated Collection</h2>
+            <section className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="font-bold text-lg text-gray-700 dark:text-gray-300 mb-4">Generated Collection</h2>
               <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4">
                 {collection.map((item, index) => (
-                  <div key={index} className="group relative aspect-[4/5] bg-gray-100 rounded-xl shadow-md overflow-hidden">
+                  <div key={index} className="group relative aspect-[4/5] bg-gray-100 dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors duration-200">
                     <img src={item.imageUrl} alt={`Variation ${index + 1}`} className="w-full h-full object-contain" />
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button
                         onClick={() => handleDownload(item.imageUrl, item.id)}
-                        className="flex items-center justify-center p-2.5 bg-white/90 text-gray-800 font-semibold rounded-full shadow-lg hover:bg-white"
+                        className="flex items-center justify-center p-2.5 bg-white/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 font-semibold rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-600 transition-colors"
                         title="Download Image"
                       >
                         <DownloadIcon className="h-5 w-5" />

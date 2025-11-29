@@ -383,10 +383,10 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
       <div className="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-5xl w-full mx-4 max-h-[95vh] overflow-hidden flex flex-col border border-sky-100">
         {/* Header */}
         <div className="mb-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 font-headline mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white font-headline mb-2">
             Choose Your Profile Photo
           </h2>
-          <p className="text-gray-500 text-sm">Adjust the circular crop area</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Adjust the circular crop area</p>
         </div>
 
         {/* Image Container with Vertical Slider */}

@@ -1,5 +1,6 @@
 import { GoogleGenAI, Modality, Type } from "@google/genai";
 import { ImageFile } from '../types';
+import { logUsage } from './usageTrackingService';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -22,7 +23,8 @@ const handleGeminiError = (error: any, context: string): never => {
 };
 
 export async function detectGender(
-    personImage: ImageFile
+    personImage: ImageFile,
+    userId?: string
 ): Promise<'Male' | 'Female' | 'Unknown'> {
     try {
         if (!personImage) {
@@ -72,12 +74,18 @@ Example response:
         }
     } catch (error) {
         handleGeminiError(error, 'gender detection');
+    } finally {
+        if (userId) {
+            const promptLength = 200; // Approximate prompt length
+            await logUsage(userId, 'Detect Gender', 1, promptLength, 0);
+        }
     }
 }
 
 export async function detectGarmentGender(
     garmentImage: ImageFile,
-    selectedGender: 'Male' | 'Female'
+    selectedGender: 'Male' | 'Female',
+    userId?: string
 ): Promise<'Male' | 'Female' | 'Unknown'> {
     try {
         if (!garmentImage) {
@@ -129,10 +137,15 @@ Example response:
         }
     } catch (error) {
         handleGeminiError(error, 'garment gender detection');
+    } finally {
+        if (userId) {
+            const promptLength = 250; // Approximate prompt length
+            await logUsage(userId, 'Detect Gender', 1, promptLength, 0);
+        }
     }
 }
 
-export async function analyzeGarmentImage(garmentImage: ImageFile): Promise<{ description: string; suggestions: string[] }> {
+export async function analyzeGarmentImage(garmentImage: ImageFile, userId?: string): Promise<{ description: string; suggestions: string[] }> {
     try {
         if (!garmentImage) {
             throw new Error('Garment image must be provided for analysis.');
@@ -191,6 +204,11 @@ Example response for a dress:
         }
     } catch (error) {
         handleGeminiError(error, 'garment analysis');
+    } finally {
+        if (userId) {
+            const promptLength = 300; // Approximate prompt length
+            await logUsage(userId, 'Analyze Garment', 1, promptLength, 0);
+        }
     }
 }
 
@@ -202,7 +220,8 @@ export async function generateVirtualTryOn(
     swapLowerBody: boolean,
     gender: 'Male' | 'Female',
     garmentDescription: string,
-    aspectRatio: '1:1' | '4:5' | '16:9'
+    aspectRatio: '1:1' | '4:5' | '16:9',
+    userId?: string
 ): Promise<string> {
     try {
         if (!userImage || !garmentImage) {
@@ -301,7 +320,13 @@ Return ONLY the final, edited image. Do not include any text, logos, or watermar
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful generation
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Virtual Photoshoot', 2, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }
@@ -317,6 +342,7 @@ export async function refineGeneratedImage(
     refinementPrompt: string,
     gender: 'Male' | 'Female',
     garmentDescription: string,
+    userId?: string
 ): Promise<string> {
     try {
         if (!currentGeneratedImage || !refinementPrompt.trim()) {
@@ -364,7 +390,13 @@ Return ONLY the final, edited image. Do not include any text, logos, or watermar
         if (response.candidates && response.candidates[0].content.parts) {
             for (const part of response.candidates[0].content.parts) {
                 if (part.inlineData) {
-                    return part.inlineData.data;
+                    const result = part.inlineData.data;
+                    // Log usage after successful refinement
+                    if (userId) {
+                        const promptLength = prompt.length;
+                        await logUsage(userId, 'Refine Image', 1, promptLength, 1);
+                    }
+                    return result;
                 }
             }
         }
@@ -379,6 +411,7 @@ export async function diagnoseAndSuggestRefinement(
     garmentImage: ImageFile,
     generatedImage: ImageFile,
     garmentDescription: string,
+    userId?: string
 ): Promise<{ flawDetected: boolean; suggestion: string }> {
     try {
         if (!personImage || !garmentImage || !generatedImage) {
@@ -447,5 +480,10 @@ Do not provide any explanation, just the JSON object.`;
         }
     } catch (error) {
         handleGeminiError(error, 'image diagnosis');
+    } finally {
+        if (userId) {
+            const promptLength = prompt.length;
+            await logUsage(userId, 'Diagnose Image', 3, promptLength, 0);
+        }
     }
 }

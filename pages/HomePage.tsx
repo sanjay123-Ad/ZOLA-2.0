@@ -19,7 +19,7 @@ const FeatureCard: React.FC<{
   <div 
     onClick={onClick}
     data-tour-id={tourId}
-    className="group relative flex flex-col bg-white/60 backdrop-blur-2xl rounded-[2rem] p-8 transition-all duration-500 cursor-pointer border-[3px] border-white shadow-xl hover:shadow-[0_20px_50px_rgba(14,165,233,0.15)] hover:-translate-y-2 overflow-hidden h-full"
+    className="group relative flex flex-col bg-white/60 dark:bg-gray-800/60 backdrop-blur-2xl rounded-[2rem] p-8 transition-all duration-500 cursor-pointer border-[3px] border-white dark:border-gray-700 shadow-xl hover:shadow-[0_20px_50px_rgba(14,165,233,0.15)] hover:-translate-y-2 overflow-hidden h-full"
   >
     {/* Decorative Background Elements - Sky Blue Glow */}
     <div className="absolute top-0 right-0 w-64 h-64 bg-sky-400/10 rounded-full blur-3xl -mr-20 -mt-20 transition-all duration-700 group-hover:bg-sky-400/20 group-hover:scale-110" />
@@ -27,29 +27,29 @@ const FeatureCard: React.FC<{
     
     <div className="relative z-10 flex flex-col h-full">
       {/* Icon */}
-      <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] text-sky-600 border border-white/60 group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white transition-all duration-500 ease-out">
+      <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white dark:bg-gray-700 shadow-[0_8px_30px_rgba(0,0,0,0.04)] text-sky-600 dark:text-sky-400 border border-white/60 dark:border-gray-600/60 group-hover:scale-110 group-hover:bg-sky-500 dark:group-hover:bg-sky-600 group-hover:text-white transition-all duration-500 ease-out">
         {icon}
       </div>
 
       <div className="mb-4">
         {subtitle && (
-          <span className="inline-block py-1 px-2.5 rounded-lg bg-white/50 text-[10px] font-bold tracking-widest text-sky-600 uppercase mb-3 border border-sky-100/50 shadow-sm group-hover:bg-sky-500 group-hover:text-white group-hover:border-sky-500 transition-colors duration-300">
+          <span className="inline-block py-1 px-2.5 rounded-lg bg-white/50 dark:bg-gray-700/50 text-[10px] font-bold tracking-widest text-sky-600 dark:text-sky-400 uppercase mb-3 border border-sky-100/50 dark:border-sky-800/50 shadow-sm group-hover:bg-sky-500 dark:group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-500 dark:group-hover:border-sky-600 transition-colors duration-300">
             {subtitle}
           </span>
         )}
-        <h3 className="text-2xl font-extrabold text-slate-900 group-hover:text-sky-600 transition-colors duration-300 tracking-tight">
-          {title}
-        </h3>
+        <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-300 tracking-tight">
+        {title}
+      </h3>
       </div>
 
-      <p className="text-slate-600 text-sm leading-relaxed mb-8 font-bold group-hover:text-slate-800 transition-colors">
+      <p className="text-slate-600 dark:text-gray-300 text-sm leading-relaxed mb-8 font-bold group-hover:text-slate-800 dark:group-hover:text-gray-200 transition-colors">
         {description}
       </p>
 
-      <div className="mt-auto pt-6 border-t border-slate-100 group-hover:border-sky-100 transition-colors">
-        <div className="flex items-center text-slate-900 font-extrabold text-sm group-hover:text-sky-600 transition-colors">
+      <div className="mt-auto pt-6 border-t border-slate-100 dark:border-gray-700 group-hover:border-sky-100 dark:group-hover:border-sky-800 transition-colors">
+        <div className="flex items-center text-slate-900 dark:text-white font-extrabold text-sm group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
           Get Started
-          <div className="ml-2 w-8 h-8 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white group-hover:border-sky-500 transition-all duration-300 group-hover:translate-x-2">
+          <div className="ml-2 w-8 h-8 rounded-full bg-white dark:bg-gray-700 shadow-sm border border-slate-100 dark:border-gray-600 flex items-center justify-center group-hover:bg-sky-500 dark:group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-500 dark:group-hover:border-sky-600 transition-all duration-300 group-hover:translate-x-2">
             <ArrowRightIcon className="w-4 h-4" />
           </div>
         </div>
@@ -61,7 +61,7 @@ const FeatureCard: React.FC<{
 const HomePage: React.FC<HomePageProps> = ({ user }) => {
   const navigate = useNavigate();
   return (
-      <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
+      <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
         <div className="max-w-7xl mx-auto">
           <main>
             <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -71,10 +71,10 @@ const HomePage: React.FC<HomePageProps> = ({ user }) => {
                     New Gemini 3 Models Available
                   </span>
                 </div>
-                <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+                <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
                   Creative Studio
                 </h2>
-                <p className="text-lg text-slate-500 max-w-2xl leading-relaxed">
+                <p className="text-lg text-slate-500 dark:text-gray-400 max-w-2xl leading-relaxed">
                   Disrupting e-commerce product photography with automated visual asset creation. 
                   Select a tool below to start generating 4K assets.
                 </p>
@@ -121,7 +121,7 @@ const HomePage: React.FC<HomePageProps> = ({ user }) => {
             <p>&copy; {new Date().getFullYear()} Zola AI Fashion Studio. All rights reserved.</p>
             <button 
               onClick={() => navigate(PATHS.ABOUT)}
-              className="mt-2 text-gray-500 hover:text-sky-600 font-semibold transition-colors"
+              className="mt-2 text-gray-500 dark:text-gray-400 hover:text-sky-600 dark:hover:text-sky-400 font-semibold transition-colors"
             >
               About Zola AI Fashion Studio
             </button>

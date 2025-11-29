@@ -244,8 +244,8 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
       setError(null);
       try {
         // Run sequentially to reduce concurrent requests and avoid rate-limiting
-        const analysis = await analyzeGarmentImage(garmentImage);
-        const classification = await classifyGarmentsInImage(garmentImage);
+        const analysis = await analyzeGarmentImage(garmentImage, user.id);
+        const classification = await classifyGarmentsInImage(garmentImage, user.id);
         
         setGarmentDescription(analysis.description);
         setGarmentSuggestions(analysis.suggestions || []);
@@ -275,7 +275,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     const validateGender = async () => {
         if (gender && userImage) {
             try {
-                const detectedGender = await detectGender(userImage);
+                const detectedGender = await detectGender(userImage, user.id);
                 if (detectedGender !== 'Unknown' && detectedGender !== gender) {
                     setGenderWarning(`Warning: Your selected gender is '${gender}', but the photo appears to be of a '${detectedGender}' person. Please correct the selection.`);
                 } else {
@@ -317,7 +317,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
         if (gender && garmentImage) {
             try {
                 // Pass the selected gender to the detection function for context
-                const detectedGarmentGender = await detectGarmentGender(garmentImage, gender);
+                const detectedGarmentGender = await detectGarmentGender(garmentImage, gender, user.id);
                 if (detectedGarmentGender !== 'Unknown' && detectedGarmentGender !== gender) {
                     setGarmentGenderWarning(`Warning: You selected '${gender}' but the uploaded garment appears to be a ${detectedGarmentGender.toLowerCase()} garment. Please correct your selection or upload a new garment photo.`);
                 } else {
@@ -361,7 +361,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
     setIsSaved(false);
 
     try {
-      const resultBase64 = await generateVirtualTryOn(userImage, garmentImage, backgroundOption, swapUpperBody, swapLowerBody, gender, garmentDescription, aspectRatio);
+      const resultBase64 = await generateVirtualTryOn(userImage, garmentImage, backgroundOption, swapUpperBody, swapLowerBody, gender, garmentDescription, aspectRatio, user.id);
       setGeneratedImage(`data:image/png;base64,${resultBase64}`);
     } catch (err) {
       console.error(err);
@@ -497,37 +497,37 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white">
-      <main className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50">
+      <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
+      <main className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
         <div className="text-center mb-2">
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] font-headline">Virtual Photoshoot & Seamless Swap</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#2E1E1E] dark:text-white font-headline">Virtual Photoshoot & Seamless Swap</h1>
         </div>
         
         {/* --- PREPARATION VIEW --- */}
         {!generatedImage && !isLoading && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-sky-600/5 border-l-4 border-sky-600/50 p-4 rounded-r-lg mb-8">
-                <h3 className="font-bold text-sky-600">Instructions for a Perfect Fit:</h3>
-                <p className="text-[#2E1E1E]/80 text-sm mt-1">
+            <div className="bg-sky-600/5 dark:bg-sky-900/20 border-l-4 border-sky-600/50 dark:border-sky-500 p-4 rounded-r-lg mb-8">
+                <h3 className="font-bold text-sky-600 dark:text-sky-400">Instructions for a Perfect Fit:</h3>
+                <p className="text-[#2E1E1E]/80 dark:text-gray-300 text-sm mt-1">
                     For best results, provide the AI with context. Select a gender, then upload clear photos for the person and the garment.
                 </p>
             </div>
 
             {/* Step 1: Gender */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span aria-hidden="true" className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">1</span>Select Subject's Gender</h3>
               <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => setGender('Male')} aria-pressed={gender === 'Male'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 bg-sky-600/5 ring-2 ring-sky-600/30' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-sky-600"><MaleIcon/></span>
-                  <span className="font-semibold text-gray-800">Male</span>
+                <button onClick={() => setGender('Male')} aria-pressed={gender === 'Male'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Male' ? 'border-sky-600 dark:border-sky-500 bg-sky-600/5 dark:bg-sky-900/30 ring-2 ring-sky-600/30 dark:ring-sky-500/30' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600 dark:text-sky-400"><MaleIcon/></span>
+                  <span className="font-semibold text-gray-800 dark:text-white">Male</span>
                 </button>
-                <button onClick={() => setGender('Female')} aria-pressed={gender === 'Female'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 bg-sky-600/5 ring-2 ring-sky-600/30' : 'border-gray-300 hover:border-gray-400'}`}>
-                  <span className="w-10 h-10 mb-2 text-sky-600"><FemaleIcon/></span>
-                  <span className="font-semibold text-gray-800">Female</span>
+                <button onClick={() => setGender('Female')} aria-pressed={gender === 'Female'} className={`flex flex-col items-center p-6 border-2 rounded-2xl transition-colors ${gender === 'Female' ? 'border-sky-600 dark:border-sky-500 bg-sky-600/5 dark:bg-sky-900/30 ring-2 ring-sky-600/30 dark:ring-sky-500/30' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}`}>
+                  <span className="w-10 h-10 mb-2 text-sky-600 dark:text-sky-400"><FemaleIcon/></span>
+                  <span className="font-semibold text-gray-800 dark:text-white">Female</span>
                 </button>
               </div>
               {genderWarning && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg animate-fade-in" role="alert">
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-500 text-yellow-800 dark:text-yellow-300 text-sm rounded-lg animate-fade-in" role="alert">
                     {genderWarning}
                 </div>
               )}
@@ -547,18 +547,18 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                 </div>
               ) : (
                 <div>
-                  <label htmlFor="garment-desc" className="block text-sm font-medium text-gray-700 mb-1">AI Generated Description (Editable)</label>
+                  <label htmlFor="garment-desc" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">AI Generated Description (Editable)</label>
                   <input
                     id="garment-desc"
                     type="text"
                     value={garmentDescription}
                     onChange={(e) => setGarmentDescription(e.target.value)}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-600 focus:border-transparent transition"
+                    className="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-600 dark:focus:ring-sky-500 focus:border-transparent transition"
                     placeholder="e.g., a women's blue Anarkali style Kurti"
                   />
                   {garmentSuggestions.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-xs font-semibold text-gray-600 mb-2">AI Suggestions (click to add):</p>
+                      <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">AI Suggestions (click to add):</p>
                       <div className="flex flex-wrap gap-2">
                         {garmentSuggestions.map((suggestion, index) => (
                           <button
@@ -569,7 +569,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                                 }
                             }}
                             title={`Add "${suggestion}"`}
-                            className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium hover:bg-sky-600/10 hover:text-sky-600 transition-colors"
+                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium hover:bg-sky-600/10 dark:hover:bg-sky-500/20 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                           >
                             + {suggestion}
                           </button>
@@ -577,29 +577,29 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                       </div>
                     </div>
                   )}
-                  <p className="text-xs text-gray-500 mt-2">A more accurate description leads to a better result.</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">A more accurate description leads to a better result.</p>
                 </div>
               )}
             </Section>
             
             <Section title="Choose What to Swap" number={4} isVisible={garmentDescription !== ''}>
               <div className="flex flex-col md:flex-row md:space-x-6 space-y-3 md:space-y-0">
-                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                  <input type="checkbox" checked={swapUpperBody} onChange={(e) => setSwapUpperBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-600" />
-                  <span className="text-gray-700 font-medium">Swap Upper Body Garment (Top/Shirt/Jacket)</span>
+                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <input type="checkbox" checked={swapUpperBody} onChange={(e) => setSwapUpperBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-sky-600 dark:text-sky-400 focus:ring-sky-600 dark:focus:ring-sky-500" />
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">Swap Upper Body Garment (Top/Shirt/Jacket)</span>
                 </label>
-                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                  <input type="checkbox" checked={swapLowerBody} onChange={(e) => setSwapLowerBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-600" />
-                  <span className="text-gray-700 font-medium">Swap Lower Body Garment (Pant/Skirt/Shorts)</span>
+                <label className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <input type="checkbox" checked={swapLowerBody} onChange={(e) => setSwapLowerBody(e.target.checked)} className="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-sky-600 dark:text-sky-400 focus:ring-sky-600 dark:focus:ring-sky-500" />
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">Swap Lower Body Garment (Pant/Skirt/Shorts)</span>
                 </label>
               </div>
               {garmentGenderWarning && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg animate-fade-in" role="alert">
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-500 text-yellow-800 dark:text-yellow-300 text-sm rounded-lg animate-fade-in" role="alert">
                     {garmentGenderWarning}
                 </div>
               )}
               {garmentSwapWarning && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg animate-fade-in" role="alert">
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-500 text-yellow-800 dark:text-yellow-300 text-sm rounded-lg animate-fade-in" role="alert">
                     {garmentSwapWarning}
                 </div>
               )}
@@ -716,6 +716,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
         onClose={() => setIsRefining(false)}
         gender={gender}
         garmentDescription={garmentDescription}
+        userId={user.id}
       />
     )}
     </>

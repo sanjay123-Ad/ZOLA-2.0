@@ -1,5 +1,6 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { ImageFile } from '../types';
+import { logUsage } from './usageTrackingService';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -25,7 +26,8 @@ export async function generatePoseSwapImage(
     modelImage: ImageFile,
     poseImage: ImageFile,
     poseCommand: string,
-    fixInstruction?: string
+    fixInstruction?: string,
+    userId?: string
 ): Promise<string> {
     try {
         if (!garmentImage || !modelImage || !poseImage) {
@@ -80,7 +82,13 @@ Return ONLY the final, generated image. No text, watermarks, or other artifacts.
 
         for (const part of response.candidates[0].content.parts) {
           if (part.inlineData) {
-            return part.inlineData.data;
+            const result = part.inlineData.data;
+            // Log usage after successful generation
+            if (userId) {
+                const promptLength = prompt.length;
+                await logUsage(userId, 'Pose Swap', 3, promptLength, 1);
+            }
+            return result;
           }
         }
         
@@ -93,7 +101,8 @@ Return ONLY the final, generated image. No text, watermarks, or other artifacts.
 
 export async function changeBackgroundImage(
     subjectImage: ImageFile,
-    backgroundImage: ImageFile
+    backgroundImage: ImageFile,
+    userId?: string
 ): Promise<string> {
     try {
         if (!subjectImage || !backgroundImage) {
@@ -135,7 +144,13 @@ Combine the person from the "Subject Image" with the scene from the "Background 
 
         for (const part of response.candidates[0].content.parts) {
             if (part.inlineData) {
-                return part.inlineData.data;
+                const result = part.inlineData.data;
+                // Log usage after successful generation
+                if (userId) {
+                    const promptLength = prompt.length;
+                    await logUsage(userId, 'Change Background', 2, promptLength, 1);
+                }
+                return result;
             }
         }
 

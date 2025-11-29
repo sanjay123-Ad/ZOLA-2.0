@@ -25,21 +25,21 @@ const ModelGalleryPage: React.FC<ModelGalleryPageProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#2E1E1E]">
-      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md shadow-sm p-4">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-[#2E1E1E] dark:text-white transition-colors duration-200">
+      <header className="sticky top-0 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm p-4 transition-colors duration-200">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold font-headline">The Model Studio</h1>
-            <p className="text-gray-600 text-sm">Select a model for your campaign</p>
+            <h1 className="text-2xl font-bold font-headline text-[#2E1E1E] dark:text-white">The Model Studio</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Select a model for your campaign</p>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={onBack} className="px-5 py-2.5 bg-gray-100 text-sm text-gray-700 font-semibold rounded-full shadow-sm hover:bg-gray-200 transition-colors">
+            <button onClick={onBack} className="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 font-semibold rounded-full shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!selectedId}
-              className="px-6 py-2.5 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 bg-[#9F1D35] text-white font-semibold rounded-full shadow-lg hover:bg-[#80172a] transition-colors disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
             >
               Confirm & Apply
             </button>
@@ -55,7 +55,7 @@ const ModelGalleryPage: React.FC<ModelGalleryPageProps> = ({ onBack }) => {
                 onClick={() => setSelectedId(model.id)}
                 onMouseEnter={() => setHoveredId(model.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`relative group w-full aspect-[4/5] block border-4 rounded-2xl shadow-lg overflow-hidden transition-all duration-200 focus:outline-none ${selectedId === model.id ? 'border-[#9F1D35] ring-4 ring-[#9F1D35]/30' : 'border-transparent hover:border-gray-400'}`}
+                className={`relative group w-full aspect-[4/5] block border-4 rounded-2xl shadow-lg overflow-hidden transition-all duration-200 focus:outline-none ${selectedId === model.id ? 'border-[#9F1D35] ring-4 ring-[#9F1D35]/30' : 'border-transparent hover:border-gray-400 dark:hover:border-gray-600'}`}
               >
                 <img
                     src={model.fullBodyUrl}
@@ -69,14 +69,14 @@ const ModelGalleryPage: React.FC<ModelGalleryPageProps> = ({ onBack }) => {
                 />
                  {selectedId === model.id && (
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                    <div className="bg-[#9F1D35] text-white rounded-full h-12 w-12 flex items-center justify-center ring-4 ring-white">
+                    <div className="bg-[#9F1D35] text-white rounded-full h-12 w-12 flex items-center justify-center ring-4 ring-white dark:ring-gray-800">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                     </div>
                   </div>
                 )}
               </button>
               <div className="p-2 mt-2 text-center">
-                <h2 className="font-bold text-lg text-[#2E1E1E]">{model.label}</h2>
+                <h2 className="font-bold text-lg text-[#2E1E1E] dark:text-white">{model.label}</h2>
               </div>
             </div>
           ))}

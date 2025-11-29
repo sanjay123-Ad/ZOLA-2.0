@@ -7,11 +7,10 @@ import { HamburgerIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from './
 interface LayoutProps {
   user: User;
   onLogout: (e?: React.MouseEvent) => void;
-  onHelpClick: () => void;
   children?: React.ReactNode; // Keep for Outlet context if needed, but primarily use Outlet
 }
 
-const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
+const Layout: React.FC<LayoutProps> = ({ user, onLogout }) => {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   // State for collapsible desktop sidebar
@@ -40,19 +39,18 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
   };
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="h-screen flex bg-white dark:bg-gray-900 transition-colors duration-200">
       {/* Static Sidebar for Desktop */}
       <div className="hidden lg:flex relative">
         <Sidebar 
             user={user} 
             onLogout={onLogout} 
-            onHelpClick={onHelpClick}
             isCollapsed={isSidebarCollapsed}
             closeMobileSidebar={() => setMobileSidebarOpen(false)}
         />
         <button 
             onClick={handleToggleSidebar}
-            className="absolute top-1/2 -right-4 z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-200 rounded-full shadow-md text-gray-600 hover:bg-gray-100 transition-all"
+            className="absolute top-1/2 -right-4 z-10 w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-full shadow-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
             aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
             {isSidebarCollapsed ? <ChevronDoubleRightIcon /> : <ChevronDoubleLeftIcon />}
@@ -66,7 +64,6 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
             <Sidebar 
                 user={user} 
                 onLogout={onLogout} 
-                onHelpClick={onHelpClick}
                 isCollapsed={false} // Mobile sidebar is never collapsed
                 closeMobileSidebar={() => setMobileSidebarOpen(false)}
             />
@@ -76,20 +73,20 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, onHelpClick }) => {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="lg:hidden bg-white/80 backdrop-blur-md border-b border-gray-200 p-4 flex items-center justify-between z-10">
+        <header className="lg:hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <img src="https://i.postimg.cc/BQ63Y0dw/Frame-13.png" alt="Zola AI Fashion Studio" className="h-8 object-contain" />
             <div className="flex flex-col">
-              <span className="text-[#2E1E1E] text-lg font-bold font-headline">ZOLA AI</span>
-              <span className="text-gray-600 text-xs font-medium">Fashion Studio</span>
+              <span className="text-[#2E1E1E] dark:text-white text-lg font-bold font-headline">ZOLA AI</span>
+              <span className="text-gray-600 dark:text-gray-400 text-xs font-medium">Fashion Studio</span>
             </div>
           </div>
-          <button onClick={() => setMobileSidebarOpen(true)} className="text-gray-600 p-2">
+          <button onClick={() => setMobileSidebarOpen(true)} className="text-gray-600 dark:text-gray-300 p-2">
             <HamburgerIcon />
           </button>
         </header>
         
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-white dark:bg-gray-900 transition-colors duration-200">
           <Outlet />
         </main>
       </div>

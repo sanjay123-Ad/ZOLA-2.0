@@ -3,14 +3,13 @@ import { NavLink, Link } from 'react-router-dom';
 import { User } from '../types';
 import { 
     VirtualPhotoshootIcon, AssetGeneratorIcon, ProductForgeIcon, StyleSceneIcon,
-    GalleryIcon, PricingIcon, SettingsIcon, ProfileIcon, HelpIcon, LogoutIcon
+    GalleryIcon, PricingIcon, SettingsIcon, ProfileIcon, LogoutIcon, UsageAnalyticsIcon
 } from './icons';
 import { PATHS } from '../constants/paths';
 
 interface SidebarProps {
     user: User;
     onLogout: (e?: React.MouseEvent) => void;
-    onHelpClick: () => void;
     isCollapsed: boolean;
     closeMobileSidebar: () => void;
 }
@@ -29,8 +28,8 @@ const NavItem: React.FC<{
             title={label}
             className={({ isActive }) => `relative group w-full flex items-center py-3 text-sm font-semibold rounded-lg transition-colors duration-200 ${
                 isActive
-                ? 'bg-sky-50 text-sky-600'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
             } ${isCollapsed ? 'justify-center' : 'px-4'}`}
         >
             <div className={`w-6 h-6 ${!isCollapsed ? 'mr-4' : ''}`}>{icon}</div>
@@ -44,7 +43,7 @@ const NavItem: React.FC<{
     );
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollapsed, closeMobileSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isCollapsed, closeMobileSidebar }) => {
     const coreFeatures = [
         { path: PATHS.VIRTUAL_PHOTOSHOOT, icon: <VirtualPhotoshootIcon />, label: 'Virtual Photoshoot' },
         { path: PATHS.STYLE_SCENE, icon: <StyleSceneIcon />, label: 'StyleScene' },
@@ -55,18 +54,62 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
     const utilityNav = [
         { path: PATHS.GALLERY, icon: <GalleryIcon />, label: 'My Gallery' },
         { path: PATHS.ASSET_COLLECTION, icon: <AssetGeneratorIcon />, label: 'Asset Collection' },
+    ];
+
+    const adminNav = [
+        { path: PATHS.USAGE_ANALYTICS, icon: <UsageAnalyticsIcon />, label: 'Usage Analytics' },
         { path: PATHS.PRICING, icon: <PricingIcon />, label: 'Pricing & Usage' },
         { path: PATHS.PROFILE, icon: <ProfileIcon />, label: 'Profile' },
         { path: PATHS.SETTINGS, icon: <SettingsIcon />, label: 'Settings' },
     ];
 
-    const handleHelpClick = () => {
-        onHelpClick();
-        closeMobileSidebar();
-    };
 
     return (
-        <aside className={`flex-shrink-0 bg-white border-r border-gray-200 flex flex-col p-4 h-full transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
+        <>
+            <style>{`
+                .sidebar-scrollbar {
+                    scrollbar-width: thick;
+                    scrollbar-color: #0ea5e9 #f1f5f9;
+                }
+                
+                .dark .sidebar-scrollbar {
+                    scrollbar-color: #0ea5e9 #1f2937;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar {
+                    width: 14px;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-track {
+                    background: #f1f5f9;
+                    border-radius: 7px;
+                    margin: 4px 0;
+                }
+                
+                .dark .sidebar-scrollbar::-webkit-scrollbar-track {
+                    background: #1f2937;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-thumb {
+                    background: #0ea5e9;
+                    border-radius: 7px;
+                    border: 2px solid #f1f5f9;
+                    min-height: 40px;
+                }
+                
+                .dark .sidebar-scrollbar::-webkit-scrollbar-thumb {
+                    border-color: #1f2937;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #0284c7;
+                }
+                
+                .sidebar-scrollbar::-webkit-scrollbar-button {
+                    display: none;
+                }
+            `}</style>
+            <aside className={`flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col p-4 h-full transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'}`}>
             <Link 
               to={PATHS.HOME}
               onClick={closeMobileSidebar}
@@ -78,41 +121,35 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
                 </div>
                 {!isCollapsed && (
                     <div className="flex flex-col">
-                        <span className="font-black text-2xl text-slate-900 tracking-tight leading-none">ZOLA AI</span>
-                        <span className="text-[10px] font-extrabold text-sky-600 tracking-[0.25em] uppercase mt-1">Fashion Studio</span>
+                        <span className="font-black text-2xl text-slate-900 dark:text-white tracking-tight leading-none">ZOLA AI</span>
+                        <span className="text-[10px] font-extrabold text-sky-600 dark:text-sky-400 tracking-[0.25em] uppercase mt-1">Fashion Studio</span>
                     </div>
                 )}
             </Link>
             
-            <nav className="flex-grow space-y-1">
-                {!isCollapsed && <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">WORKSPACE</p>}
+            <nav className="flex-grow space-y-1 overflow-y-auto overflow-x-hidden sidebar-scrollbar pr-2">
+                {!isCollapsed && <p className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">STUDIO</p>}
                 {coreFeatures.map(item => (
                     <NavItem key={item.path} to={item.path} isCollapsed={isCollapsed} onClick={closeMobileSidebar} {...item} />
                 ))}
 
                 <div className={`${isCollapsed ? 'mt-4' : 'pt-6'}`}>
-                    {!isCollapsed && <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">TOOLS</p>}
+                    {!isCollapsed && <p className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">LIBRARY</p>}
                     {utilityNav.map(item => (
                        <NavItem key={item.path} to={item.path} isCollapsed={isCollapsed} onClick={closeMobileSidebar} {...item} />
                     ))}
-                    <button
-                        onClick={handleHelpClick}
-                        title="Help / Tour"
-                        className={`relative group w-full flex items-center py-3 text-sm font-semibold rounded-lg transition-colors duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 ${isCollapsed ? 'justify-center' : 'px-4'}`}
-                    >
-                        <div className={`w-6 h-6 ${!isCollapsed ? 'mr-4' : ''}`}><HelpIcon /></div>
-                        {!isCollapsed && <span className="truncate">Help / Tour</span>}
-                        {isCollapsed && (
-                            <div className="absolute left-full ml-4 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-800 text-white text-xs font-semibold rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-20">
-                                Help / Tour
-                            </div>
-                        )}
-                    </button>
+                </div>
+
+                <div className={`${isCollapsed ? 'mt-4' : 'pt-6'}`}>
+                    {!isCollapsed && <p className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">ADMIN</p>}
+                    {adminNav.map(item => (
+                       <NavItem key={item.path} to={item.path} isCollapsed={isCollapsed} onClick={closeMobileSidebar} {...item} />
+                    ))}
                 </div>
             </nav>
 
             <div className="mt-auto">
-                <div className="p-2 border-t border-gray-200">
+                <div className="p-2 border-t border-gray-200 dark:border-gray-700">
                     <div className={`flex items-center ${isCollapsed ? 'flex-col' : ''}`}>
                         <div className="relative group">
                             {user.avatar && (
@@ -132,14 +169,14 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
 
                         {!isCollapsed && (
                             <div className="ml-3">
-                                <p className="text-sm font-bold text-gray-800">{user.username}</p>
+                                <p className="text-sm font-bold text-gray-800 dark:text-white">{user.username}</p>
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         onLogout(e);
                                     }}
-                                    className="text-xs text-red-400 hover:text-red-300 font-semibold flex items-center transition-colors mt-1"
+                                    className="text-xs text-red-400 dark:text-red-500 hover:text-red-300 dark:hover:text-red-400 font-semibold flex items-center transition-colors mt-1"
                                     type="button"
                                 >
                                     <div className="w-3 h-3 mr-1"><LogoutIcon /></div>
@@ -156,7 +193,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
                                     onLogout(e);
                                 }} 
                                 title="Sign Out" 
-                                className="relative group mt-3 text-gray-600 hover:text-red-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                className="relative group mt-3 text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                 type="button"
                             >
                                 <div className="w-5 h-5"><LogoutIcon /></div>
@@ -169,6 +206,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, onHelpClick, isCollap
                 </div>
             </div>
         </aside>
+        </>
     );
 };
 
