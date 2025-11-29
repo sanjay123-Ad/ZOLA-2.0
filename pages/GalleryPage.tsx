@@ -88,7 +88,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ user, assets, isLoading, erro
               disabled={isLoading}
               className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 text-sky-600 dark:text-sky-400 ${isLoading ? 'animate-spin transition-all duration-300 ease-linear' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0121.5 13M20 20l-1.5-1.5A9 9 0 012.5 11" />
               </svg>
               Refresh

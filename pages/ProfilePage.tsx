@@ -513,7 +513,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-200">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 dark:border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 dark:border-sky-400 border-t-transparent rounded-full animate-spin transition-all duration-300 ease-linear"></div>
           <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
         </div>
       </div>

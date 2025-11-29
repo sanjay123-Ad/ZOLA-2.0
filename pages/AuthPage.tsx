@@ -446,7 +446,7 @@ const AuthPage: React.FC = () => {
                 } focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none text-sm`}
                 required
               />
-              {checkingEmail && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-200 border-t-sky-500 rounded-full animate-spin" />}
+              {checkingEmail && <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-gray-200 dark:border-gray-600 border-t-sky-500 dark:border-t-sky-400 rounded-full animate-spin transition-all duration-300 ease-linear" />}
             </div>
             {emailError && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><IconAlertCircle className="w-3 h-3" /> {emailError}</p>}
           </div>

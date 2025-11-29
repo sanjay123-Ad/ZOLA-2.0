@@ -165,7 +165,7 @@ const ResetPasswordPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-50 via-white to-white">
         <div className="w-full max-w-sm p-8 bg-white text-[#2E1E1E] rounded-2xl shadow-2xl">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-16 h-16 mx-auto mb-4 border-4 border-sky-500 dark:border-sky-400 border-t-transparent rounded-full animate-spin transition-all duration-300 ease-linear"></div>
             <p className="text-gray-600">Verifying reset link...</p>
           </div>
         </div>

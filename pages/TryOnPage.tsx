@@ -479,8 +479,8 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
   const Section: React.FC<{title: string; number: number; children: React.ReactNode; isVisible: boolean}> = ({ title, number, children, isVisible }) => {
     if (!isVisible) return null;
     return (
-      <div className="mt-8 pt-6 border-t border-gray-200/80 animate-fade-in">
-        <h3 className="text-lg font-bold text-gray-800 mb-4"><span aria-hidden="true" className="text-white bg-sky-600 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">{number}</span>{title}</h3>
+      <div className="mt-8 pt-6 border-t border-gray-200/80 dark:border-gray-700/80 animate-fade-in">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4"><span aria-hidden="true" className="text-white bg-sky-600 dark:bg-sky-500 rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-3">{number}</span>{title}</h3>
         {children}
       </div>
     )
@@ -609,8 +609,8 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
               <div className="flex flex-col items-center justify-center space-y-6">
                 
                 <div>
-                  <label className="block text-center text-sm font-medium text-gray-700 mb-2">Background Style</label>
-                  <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200/80 flex-wrap justify-center">
+                  <label className="block text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Background Style</label>
+                  <div className="inline-flex rounded-full bg-gray-100 dark:bg-gray-700 p-1 border border-gray-200/80 dark:border-gray-600/80 flex-wrap justify-center">
                     {(
                       [
                         ['studio', 'Studio'],
@@ -622,7 +622,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                       <button
                         key={value}
                         onClick={() => setBackgroundOption(value)}
-                        className={`px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out m-0.5 ${backgroundOption === value ? 'bg-white text-sky-600 shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
+                        className={`px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out m-0.5 ${backgroundOption === value ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm' : 'bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-600/50'}`}
                         aria-pressed={backgroundOption === value}
                         title={label}
                       >
@@ -633,13 +633,13 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
                 </div>
 
                 <div>
-                    <label className="block text-center text-sm font-medium text-gray-700 mb-2">Aspect Ratio</label>
-                    <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200/80">
+                    <label className="block text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aspect Ratio</label>
+                    <div className="inline-flex rounded-full bg-gray-100 dark:bg-gray-700 p-1 border border-gray-200/80 dark:border-gray-600/80">
                         {( [['1:1', 'Square'], ['4:5', 'Portrait'], ['16:9', 'Landscape']] as const).map(([value, label]) => (
                             <button
                                 key={value}
                                 onClick={() => setAspectRatio(value)}
-                                className={`px-4 sm:px-6 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out ${aspectRatio === value ? 'bg-white text-sky-600 shadow-sm' : 'bg-transparent text-gray-600 hover:bg-gray-200/50'}`}
+                                className={`px-4 sm:px-6 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ease-out ${aspectRatio === value ? 'bg-white dark:bg-gray-600 text-sky-600 dark:text-sky-400 shadow-sm' : 'bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-gray-600/50'}`}
                                 aria-pressed={aspectRatio === value}
                                 title={label}
                             >
@@ -658,18 +658,18 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
           </div>
         )}
 
-        {isLoading && (
+            {isLoading && (
           <div className="text-center py-16">
             <div className="flex justify-center items-center"><Spinner /></div>
-            <p className="mt-4 text-lg text-gray-600 animate-pulse">Generating your photoshoot...</p>
-            <p className="text-sm text-gray-500 mt-1">Target speed: 10-15 seconds.</p>
+            <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 animate-pulse">Generating your photoshoot...</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Target speed: 10-15 seconds.</p>
           </div>
         )}
         
         {/* --- RESULT VIEW --- */}
         {generatedImage && !isLoading && (
           <div className="mt-2 animate-fade-in">
-            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Your New Look</h2>
+            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">Your New Look</h2>
             <div className="w-full flex justify-center">
               <div className="relative bg-gray-100 rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200 p-2 max-w-lg w-full">
                 <img src={generatedImage} alt="AI Generated Photoshoot Result" className="rounded-xl w-full object-contain" />
@@ -693,8 +693,8 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
               </button>
             </div>
             {error && (<div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center text-sm"><p>{error}</p></div>)}
-            <div className="text-center mt-8 pt-6 border-gray-200">
-              <button onClick={handleStartOver} className="text-sky-600 hover:text-[sky-700] font-semibold">
+            <div className="text-center mt-8 pt-6 border-gray-200 dark:border-gray-700">
+              <button onClick={handleStartOver} className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-semibold">
                 Start Over
               </button>
             </div>
@@ -702,7 +702,7 @@ const TryOnPage: React.FC<TryOnPageProps> = ({ user, onSave }) => {
         )}
       </main>
 
-      <footer className="text-center mt-8 text-gray-400 text-sm">
+      <footer className="text-center mt-8 text-gray-400 dark:text-gray-500 text-sm">
         <p>&copy; {new Date().getFullYear()} ZOLA AI. All rights reserved.</p>
       </footer>
     </div>
