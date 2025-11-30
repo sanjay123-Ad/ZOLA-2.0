@@ -356,6 +356,7 @@ const pillarData = [
 
 const LandingPage: React.FC = () => {
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
+  const [isAnnual, setIsAnnual] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -670,13 +671,224 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-white via-sky-50/30 to-white">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-sky-400/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          </div>
+
+          <div className="relative z-10 container mx-auto max-w-7xl">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <div className="inline-block mb-6">
+                <span className="px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-semibold">
+                  💎 Simple, Transparent Pricing
+                </span>
+              </div>
+              <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                Ready to Revolutionize
+              </h2>
+              <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+                Choose the perfect plan for your business. Start creating professional AI-generated assets in minutes.
+              </p>
+
+              {/* Toggle Switch */}
+              <div className="flex items-center justify-center gap-4 mb-12">
+                <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-slate-900' : 'text-slate-500'}`}>
+                  Monthly
+                </span>
+                <button
+                  onClick={() => setIsAnnual(!isAnnual)}
+                  className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 ${
+                    isAnnual ? 'bg-sky-600' : 'bg-gray-300'
+                  }`}
+                  role="switch"
+                  aria-checked={isAnnual}
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                      isAnnual ? 'translate-x-9' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-slate-900' : 'text-slate-500'}`}>
+                  Annual <span className={`text-sky-600 font-bold transition-all duration-300 ${isAnnual ? 'glow-effect' : ''}`}>(2 months free)</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Pricing Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+              {[
+                {
+                  name: 'Basic',
+                  tagline: 'Perfect for getting started',
+                  monthlyPrice: 19,
+                  annualPrice: 190,
+                  annualSavings: 38,
+                  credits: 250,
+                  features: [
+                    '250 Credits / month',
+                    'Real-Time Generation',
+                    'Commercial License',
+                    'Remove Watermark',
+                    'Standard Support'
+                  ],
+                  color: 'blue'
+                },
+                {
+                  name: 'Pro',
+                  tagline: 'Accelerate growth & consistency',
+                  monthlyPrice: 49,
+                  annualPrice: 490,
+                  annualSavings: 98,
+                  credits: 750,
+                  features: [
+                    '750 Credits / month',
+                    'Access to All Tools',
+                    'Commercial License',
+                    'Remove Watermark',
+                    'High Pixel Quality',
+                    'Standard Support'
+                  ],
+                  popular: true,
+                  color: 'sky'
+                },
+                {
+                  name: 'Agency',
+                  tagline: 'Maximum power & scale',
+                  monthlyPrice: 99,
+                  annualPrice: 990,
+                  annualSavings: 198,
+                  credits: 1450,
+                  features: [
+                    '1,450 Credits / month',
+                    'API Access',
+                    'Commercial License',
+                    'Priority Support',
+                    'Early Access to New Models',
+                    'Remove Watermark',
+                    '4K Ultra-High Resolution'
+                  ],
+                  color: 'purple'
+                }
+              ].map((plan, index) => {
+                const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+                const period = isAnnual ? '/yr' : '/mo';
+                const savings = isAnnual ? `Save $${plan.annualSavings} / year` : null;
+                
+                const colorClasses = plan.popular 
+                  ? 'border-2 border-sky-500 shadow-xl shadow-sky-200/50 bg-gradient-to-br from-sky-50 to-cyan-50'
+                  : plan.color === 'blue'
+                  ? 'border border-gray-200 bg-gradient-to-br from-blue-50 to-sky-50'
+                  : plan.color === 'purple'
+                  ? 'border border-gray-200 bg-gradient-to-br from-purple-50 to-indigo-50'
+                  : 'border border-gray-200 bg-white';
+
+                const buttonColor = plan.popular
+                  ? 'bg-sky-600 hover:bg-sky-700'
+                  : plan.color === 'blue'
+                  ? 'bg-blue-600 hover:bg-blue-700'
+                  : 'bg-purple-600 hover:bg-purple-700';
+
+                const checkmarkColor = plan.popular
+                  ? 'text-sky-600'
+                  : plan.color === 'blue'
+                  ? 'text-blue-600'
+                  : 'text-purple-600';
+
+                const priceColor = plan.popular
+                  ? 'text-sky-600'
+                  : plan.color === 'blue'
+                  ? 'text-blue-600'
+                  : 'text-purple-600';
+
+                return (
+                  <div
+                    key={plan.name}
+                    className={`relative ${colorClasses} rounded-2xl p-8 transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+                      plan.popular ? 'md:-mt-4 md:mb-4' : ''
+                    }`}
+                  >
+                    {/* Popular Badge */}
+                    {plan.popular && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span className="bg-sky-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg animate-bounce">
+                          MOST POPULAR
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Plan Header */}
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                        {plan.name}
+                      </h3>
+                      <p className="text-sm text-slate-600 mb-4">
+                        {plan.tagline}
+                      </p>
+                      
+                      {/* Price */}
+                      <div className="mb-2">
+                        <span className={`text-4xl font-extrabold ${priceColor}`}>
+                          ${price}
+                        </span>
+                        <span className="text-slate-600 text-lg">
+                          {period}
+                        </span>
+                      </div>
+                      
+                      {savings && (
+                        <p className="text-sm text-sky-600 font-semibold">
+                          {savings}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Features List */}
+                    <ul className="space-y-4 mb-8 min-h-[280px]">
+                      {plan.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-3">
+                          <svg
+                            className={`flex-shrink-0 w-5 h-5 mt-0.5 ${checkmarkColor}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          <span className="text-slate-700 text-sm">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* CTA Button */}
+                    <button
+                      onClick={handleStart}
+                      className={`w-full ${buttonColor} text-white py-4 rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95`}
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Final CTA */}
         <section className="relative py-32 px-4 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-sky-200 via-sky-100 to-white pointer-events-none" />
           <div className="relative z-10 container mx-auto max-w-4xl text-center">
             <h2 className="font-heading text-5xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-              Ready to revolutionize <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600">your workflow?</span>
+              Start Your Journey <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600">Today</span>
             </h2>
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join the thousands of designers and brands building the future of fashion with ZOLA. Experience the power of AI-driven studio photography today.
@@ -721,6 +933,35 @@ const LandingPage: React.FC = () => {
           <p>&copy; {new Date().getFullYear()} ZOLA AI. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Glow Effect Styles */}
+      <style>{`
+        .glow-effect {
+          animation: glow-pulse 2s ease-in-out infinite;
+          text-shadow: 0 0 10px rgba(14, 165, 233, 0.5),
+                       0 0 20px rgba(14, 165, 233, 0.4),
+                       0 0 30px rgba(14, 165, 233, 0.3),
+                       0 0 40px rgba(14, 165, 233, 0.2);
+        }
+        
+        @keyframes glow-pulse {
+          0%, 100% {
+            text-shadow: 0 0 10px rgba(14, 165, 233, 0.5),
+                         0 0 20px rgba(14, 165, 233, 0.4),
+                         0 0 30px rgba(14, 165, 233, 0.3),
+                         0 0 40px rgba(14, 165, 233, 0.2);
+            transform: scale(1);
+          }
+          50% {
+            text-shadow: 0 0 20px rgba(14, 165, 233, 0.8),
+                         0 0 30px rgba(14, 165, 233, 0.6),
+                         0 0 40px rgba(14, 165, 233, 0.5),
+                         0 0 50px rgba(14, 165, 233, 0.4),
+                         0 0 60px rgba(14, 165, 233, 0.3);
+            transform: scale(1.05);
+          }
+        }
+      `}</style>
     </div>
   );
 };

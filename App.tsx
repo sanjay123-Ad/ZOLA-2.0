@@ -8,6 +8,7 @@ import AssetGeneratorPage from './pages/AssetGeneratorPage';
 import LandingPage from './pages/LandingPage';
 import CatalogForgedPage from './pages/CatalogForgedPage';
 import AboutPage from './pages/AboutPage';
+import PricingPage from './pages/PricingPage';
 import ProfilePage from './pages/ProfilePage';
 import StyleScenePage from './pages/StyleScenePage';
 import ModelGalleryPage from './pages/ModelGalleryPage';
@@ -474,7 +475,7 @@ const App: React.FC = () => {
                           deletingAssetId={deletingCollectionAssetId}
                       />
                   } />
-                  <Route path={PATHS.PRICING} element={<AboutPage />} />
+                  <Route path={PATHS.PRICING} element={<PricingPage />} />
                   <Route path={PATHS.PROFILE} element={<ProfilePage user={currentUser} />} />
                   <Route path={PATHS.SETTINGS} element={<SettingsPage user={currentUser} />} />
                   <Route path={PATHS.ABOUT} element={<AboutPage />} />
